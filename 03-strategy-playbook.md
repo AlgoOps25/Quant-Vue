@@ -195,25 +195,144 @@ For evaluations or funded accounts:
 
 ## Strategy 6 — Opening Range Breakout / Retest
 
+### Source screenshots
+
+Screenshot Set #7 was captured from `Simple 3-Minute Opening Range Futures Strategy - Strategy #5`.
+
+Captured examples:
+
+- Opening range breakout chart on **S&P 500 E-mini Futures 3-minute chart**.
+- Aqua opening range high/low box.
+- Large bullish breakout candle through the opening range.
+- Qpro settings panels from the strategy video.
+- Moneyball_Q settings panel from the strategy video.
+
+Important adaptation note:
+
+- The video example is on **ES**, not NQ.
+- For this repo, use the same logic on NQ/MNQ, but validate stop size and volatility separately because NQ moves faster and farther than ES.
+
+### Confirmed settings shown in the Strategy #5 screenshots
+
+#### Moneyball_Q settings
+
+| Setting | Confirmed value |
+|---|---|
+| Number of bars between signals | 15 |
+| Mode | M |
+| Period | 2 |
+| All Zero | ON |
+| Upper Threshold | 0.35 |
+| Lower Threshold | -0.35 |
+| Reactivity | 0.1 |
+
+#### Qpro/Qcloud settings shown
+
+| Setting | Confirmed value |
+|---|---|
+| Qcloud Period 1 | 19 |
+| Qcloud Period 2 | 29 |
+| Qcloud Period 3 | 49 |
+| Qcloud Period 4 | 59 |
+| Qcloud Period 5 | 69 |
+| Qcloud Period 6 | 99 |
+
+#### Qbands settings shown
+
+Two panels were captured. Treat these as strategy-video examples, not the main NQ Renko baseline.
+
+| Setting | Confirmed value |
+|---|---|
+| Use Qbands | ON |
+| Qbands Source | Weighted |
+| Qbands Length | 155 in one panel; 77 in another panel |
+| ATR Lookback / Lookback Distance | 256 |
+| Band Deviation | 6.8 in one panel; 5 in another panel |
+| Trend Period | 20 |
+| Center Line Up | Green |
+| Center Line Down | Red |
+
+#### Qwave settings shown
+
+| Setting | Confirmed value |
+|---|---|
+| Use Qwave | ON |
+| Trading Session | 08:30–16:00 shown in one panel |
+| Timezone | UTC-5 shown in one panel |
+| Price To Use | Weighted |
+| APB Bars Back | 33 |
+| ATR Bars Back | 256 |
+| Qwave Band Deviation | 1.5 |
+| Show Qwave ADD Alerts? | ON in one panel |
+
+#### Qline settings shown
+
+| Setting | Confirmed value |
+|---|---|
+| Use Qline | ON |
+| Qline Source | close |
+| Qline Length | 9 |
+| Qline Multiplier | 0.1 |
+| Qline Common Period | 39 |
+| Qline Reactivity | 0.4 |
+| Qline Ribbon | ON in one panel |
+
 ### Best market condition
 
-- Strong volume at New York open.
-- Opening range forms cleanly.
-- Higher timeframe has room in breakout direction.
+- Strong volume at market open.
+- Opening range is clean and obvious.
+- Price breaks the opening range decisively.
+- Qpro/Qcloud direction agrees with the breakout.
+- Moneyball supports the breakout direction.
+- The breakout has room before the next major level.
 
 ### Setup
 
-1. Mark opening range.
-2. Wait for break and retest.
-3. Confirm with SMC structure.
-4. Confirm with Qcloud/Qline/Moneyball.
-5. Enter only if not chasing extension.
+1. On a 3-minute chart, mark the opening range high and low.
+2. Wait for a decisive break above or below the range.
+3. Do not chase if the breakout candle is already too extended.
+4. Prefer a retest of the opening range boundary.
+5. Confirm with Qpro/Qcloud direction.
+6. Confirm with Moneyball momentum.
+7. Enter only if the stop can sit on the other side of the retest/range and target gives acceptable R.
+
+### Long opening-range breakout
+
+A valid long requires:
+
+- Price breaks above the opening range high.
+- Breakout candle closes strong or price retests the OR high as support.
+- Qcloud/Qpro is bullish.
+- Moneyball_Q is above zero or printing bullish confirmation.
+- Target is not directly into a major resistance/order block.
+
+### Short opening-range breakout
+
+A valid short requires:
+
+- Price breaks below the opening range low.
+- Breakout candle closes strong or price retests the OR low as resistance.
+- Qcloud/Qpro is bearish.
+- Moneyball_Q is below zero or printing bearish confirmation.
+- Target is not directly into a major support/order block.
+
+### Stop
+
+- Long: below the opening range high retest, below the breakout candle low, or below the range depending on volatility.
+- Short: above the opening range low retest, above the breakout candle high, or above the range depending on volatility.
+
+### Targets
+
+- Target 1: measured move equal to range height or nearest structure.
+- Target 2: prior day high/low, overnight high/low, Qwave/Qbands level, or opposing liquidity.
 
 ### Avoid
 
-- First candle impulse without retest.
-- Breakout directly into major level.
-- News spike without structure.
+- Entering before the range is defined.
+- Entering on a fakeout without close/retest confirmation.
+- Chasing a huge candle after the move already expanded.
+- Trading the breakout directly into red/green opposing zones.
+- Using ES settings blindly on NQ without testing.
 
 ## Strategy 7 — 8am Candle Retest
 
