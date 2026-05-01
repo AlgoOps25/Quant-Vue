@@ -249,17 +249,35 @@ Recommended use:
 
 Purpose: oscillator/momentum confirmation and chop recognition.
 
-Transcript-derived settings:
+## 4A. Screenshot-confirmed Moneyball settings — Screenshot Set #2
+
+| Setting | Confirmed value |
+|---|---|
+| Number of bars between signals | 15 |
+| Mode | M |
+| Period | 4 |
+| All Zero | ON / checked |
+| Upper Threshold | 0.4 |
+| Lower Threshold | -0.4 |
+| Reactivity | 0.1 |
+
+Interpretation:
+
+- This is a faster scalping configuration because Period is set to 4.
+- The transcript said most intraday scalping configurations stay in the 4–8 period range; this screenshot confirms the aggressive end of that range.
+- Thresholds at 0.4 / -0.4 are much tighter than the broader transcript discussion, so validate this on your exact NQ Renko layout before trusting it live.
+- Number of bars between signals at 15 should reduce repeated diamonds/signals during noisy chop.
+
+Transcript-derived guidance:
 
 | Setting | Recommended starting point |
 |---|---|
 | Mode | M |
 | All Zero | Checked / ON |
-| Period | 5 on NQ example |
-| Scalping period range | 4 to 8 |
+| Period | 4 to 8 for scalping; screenshot uses 4 |
 | Trend-bias period range | 8 to 20 |
-| Upper/lower thresholds | Usually around 3 to 4.5 range |
-| Reactivity | Fine-tune only; 0.1 baseline, 0.5 can print earlier |
+| Upper/lower thresholds | Screenshot uses 0.4 / -0.4 |
+| Reactivity | Screenshot uses 0.1; higher values can print earlier |
 
 Optional enhancement:
 
