@@ -1,0 +1,327 @@
+//@version=5
+indicator("Layer 8 NQ Confluence Engine v0.1", overlay=true, max_lines_count=500, max_labels_count=500)
+
+// -----------------------------------------------------------------------------
+// Layer 8 NQ Confluence Engine v0.1
+// Original TradingView indicator prototype.
+// This does not copy or reverse-engineer any proprietary QuantVue code.
+// Purpose: decision-support for manual NQ/MNQ trading.
+// -----------------------------------------------------------------------------
+
+// =============================================================================
+// Inputs
+// =============================================================================
+
+groupLevels = "Levels"
+showPrevDay = input.bool(true, "Show Prior Day High/Low", group=groupLevels)
+showOvernight = input.bool(true, "Show Overnight High/Low", group=groupLevels)
+show8am = input.bool(true, "Show 8am Candle Zone", group=groupLevels)
+showOR3 = input.bool(true, "Show 3-Minute Opening Range", group=groupLevels)
+showOR15 = input.bool(true, "Show 15-Minute Opening Range", group=groupLevels)
+
+sessionTZ = input.string("America/New_York", "Session Timezone", group=groupLevels)
+overnightSession = input.session("1800-0929", "Overnight Session", group=groupLevels)
+regularSession = input.session("0930-1600", "Regular Session", group=groupLevels)
+
+// 8am candle capture window. On intraday charts this captures the candle that opens at 8:00 NY time.
+eightAmSession = input.session("0800-0801", "8am Capture Window", group=groupLevels)
+
+// Opening range capture windows.
+or3Session = input.session("0930-0933", "3-Minute OR Window", group=groupLevels)
+or15Session = input.session("0930-0945", "15-Minute OR Window", group=groupLevels)
+
+// Trend inputs
+groupTrend = "Trend"
+showTrendCloud = input.bool(true, "Show EMA Trend Cloud", group=groupTrend)
+fastEmaLen = input.int(21, "Fast EMA", minval=1, group=groupTrend)
+slowEmaLen = input.int(55, "Slow EMA", minval=1, group=groupTrend)
+trendNeutralTicks = input.float(0.0, "Neutral Buffer Points", minval=0.0, group=groupTrend)
+
+// Momentum inputs
+groupMomentum = "Momentum"
+rsiLen = input.int(14, "RSI Length", minval=1, group=groupMomentum)
+rsiBull = input.float(55.0, "RSI Bull Threshold", group=groupMomentum)
+rsiBear = input.float(45.0, "RSI Bear Threshold", group=groupMomentum)
+
+// ATR band inputs
+groupBands = "Volatility Bands"
+showAtrBands = input.bool(true, "Show ATR Bands", group=groupBands)
+atrLen = input.int(14, "ATR Length", minval=1, group=groupBands)
+atrMult = input.float(2.0, "ATR Multiplier", minval=0.1, step=0.1, group=groupBands)
+bandBasisLen = input.int(34, "Band Basis EMA", minval=1, group=groupBands)
+
+// Structure inputs
+groupStructure = "Structure"
+useBasicStructure = input.bool(true, "Use Basic Swing Structure", group=groupStructure)
+swingLen = input.int(3, "Swing Length", minval=1, group=groupStructure)
+
+// Scoring inputs
+groupScore = "Confluence Score"
+minScore = input.int(7, "Minimum Alert Score", minval=1, maxval=10, group=groupScore)
+levelProximity = input.float(15.0, "Level Proximity Points", minval=0.25, step=0.25, group=groupScore)
+showDashboard = input.bool(true, "Show Dashboard", group=groupScore)
+
+// =============================================================================
+// Utility functions
+// =============================================================================
+
+inSession(sess) =>
+    not na(time(timeframe.period, sess, sessionTZ))
+
+nearLevel(price, level, distance) =>
+    not na(level) and math.abs(price - level) <= distance
+
+// =============================================================================
+// Prior day levels
+// =============================================================================
+
+prevDayHigh = request.security(syminfo.tickerid, "D", high[1], barmerge.gaps_off, barmerge.lookahead_on)
+prevDayLow = request.security(syminfo.tickerid, "D", low[1], barmerge.gaps_off, barmerge.lookahead_on)
+
+plot(showPrevDay ? prevDayHigh : na, "Prior Day High", color=color.new(color.white, 0), linewidth=1, style=plot.style_linebr)
+plot(showPrevDay ? prevDayLow : na, "Prior Day Low", color=color.new(color.gray, 0), linewidth=1, style=plot.style_linebr)
+
+// =============================================================================
+// Overnight high/low
+// =============================================================================
+
+isON = inSession(overnightSession)
+isRTH = inSession(regularSession)
+newDay = ta.change(time("D"))
+
+var float onHigh = na
+var float onLow = na
+
+if newDay
+    onHigh := na
+    onLow := na
+
+if isON
+    onHigh := na(onHigh) ? high : math.max(onHigh, high)
+    onLow := na(onLow) ? low : math.min(onLow, low)
+
+plot(showOvernight ? onHigh : na, "Overnight High", color=color.new(color.yellow, 0), linewidth=1, style=plot.style_linebr)
+plot(showOvernight ? onLow : na, "Overnight Low", color=color.new(color.orange, 0), linewidth=1, style=plot.style_linebr)
+
+// =============================================================================
+// 8am candle zone
+// =============================================================================
+
+is8am = inSession(eightAmSession)
+var float eightHigh = na
+var float eightLow = na
+var float eightOpen = na
+var float eightClose = na
+
+if newDay
+    eightHigh := na
+    eightLow := na
+    eightOpen := na
+    eightClose := na
+
+if is8am and not is8am[1]
+    eightHigh := high
+    eightLow := low
+    eightOpen := open
+    eightClose := close
+else if is8am
+    eightHigh := math.max(nz(eightHigh, high), high)
+    eightLow := math.min(nz(eightLow, low), low)
+    eightClose := close
+
+plot(show8am ? eightHigh : na, "8am High", color=color.new(color.aqua, 0), linewidth=1, style=plot.style_linebr)
+plot(show8am ? eightLow : na, "8am Low", color=color.new(color.aqua, 0), linewidth=1, style=plot.style_linebr)
+plot(show8am ? math.max(eightOpen, eightClose) : na, "8am Body High", color=color.new(color.aqua, 65), linewidth=1, style=plot.style_linebr)
+plot(show8am ? math.min(eightOpen, eightClose) : na, "8am Body Low", color=color.new(color.aqua, 65), linewidth=1, style=plot.style_linebr)
+
+// =============================================================================
+// Opening ranges
+// =============================================================================
+
+isOR3 = inSession(or3Session)
+isOR15 = inSession(or15Session)
+
+var float or3High = na
+var float or3Low = na
+var float or15High = na
+var float or15Low = na
+
+if newDay
+    or3High := na
+    or3Low := na
+    or15High := na
+    or15Low := na
+
+if isOR3
+    or3High := na(or3High) ? high : math.max(or3High, high)
+    or3Low := na(or3Low) ? low : math.min(or3Low, low)
+
+if isOR15
+    or15High := na(or15High) ? high : math.max(or15High, high)
+    or15Low := na(or15Low) ? low : math.min(or15Low, low)
+
+plot(showOR3 ? or3High : na, "3m OR High", color=color.new(color.lime, 0), linewidth=1, style=plot.style_linebr)
+plot(showOR3 ? or3Low : na, "3m OR Low", color=color.new(color.red, 0), linewidth=1, style=plot.style_linebr)
+plot(showOR15 ? or15High : na, "15m OR High", color=color.new(color.green, 0), linewidth=2, style=plot.style_linebr)
+plot(showOR15 ? or15Low : na, "15m OR Low", color=color.new(color.maroon, 0), linewidth=2, style=plot.style_linebr)
+
+// =============================================================================
+// Trend cloud
+// =============================================================================
+
+emaFast = ta.ema(close, fastEmaLen)
+emaSlow = ta.ema(close, slowEmaLen)
+trendBuffer = trendNeutralTicks
+trendBull = emaFast > emaSlow + trendBuffer
+trendBear = emaFast < emaSlow - trendBuffer
+trendNeutral = not trendBull and not trendBear
+
+pFast = plot(showTrendCloud ? emaFast : na, "Fast EMA", color=color.new(color.teal, 0), linewidth=1)
+pSlow = plot(showTrendCloud ? emaSlow : na, "Slow EMA", color=color.new(color.blue, 0), linewidth=1)
+fill(pFast, pSlow, color=trendBull ? color.new(color.teal, 85) : trendBear ? color.new(color.red, 85) : color.new(color.gray, 90), title="Trend Cloud")
+
+// =============================================================================
+// Momentum and ATR bands
+// =============================================================================
+
+rsi = ta.rsi(close, rsiLen)
+momentumBull = rsi >= rsiBull
+momentumBear = rsi <= rsiBear
+
+atr = ta.atr(atrLen)
+basis = ta.ema(close, bandBasisLen)
+upperBand = basis + atr * atrMult
+lowerBand = basis - atr * atrMult
+
+plot(showAtrBands ? basis : na, "ATR Band Basis", color=color.new(color.gray, 30), linewidth=1)
+plot(showAtrBands ? upperBand : na, "ATR Upper Band", color=color.new(color.gray, 60), linewidth=1)
+plot(showAtrBands ? lowerBand : na, "ATR Lower Band", color=color.new(color.gray, 60), linewidth=1)
+
+nearUpperBand = math.abs(close - upperBand) <= levelProximity
+nearLowerBand = math.abs(close - lowerBand) <= levelProximity
+
+// =============================================================================
+// Basic structure and sweep detection
+// =============================================================================
+
+swingHigh = ta.pivothigh(high, swingLen, swingLen)
+swingLow = ta.pivotlow(low, swingLen, swingLen)
+
+var float lastSwingHigh = na
+var float lastSwingLow = na
+
+if not na(swingHigh)
+    lastSwingHigh := swingHigh
+
+if not na(swingLow)
+    lastSwingLow := swingLow
+
+bosBull = useBasicStructure and not na(lastSwingHigh) and close > lastSwingHigh
+bosBear = useBasicStructure and not na(lastSwingLow) and close < lastSwingLow
+
+sweepLowReclaim = useBasicStructure and not na(lastSwingLow) and low < lastSwingLow and close > lastSwingLow
+sweepHighReject = useBasicStructure and not na(lastSwingHigh) and high > lastSwingHigh and close < lastSwingHigh
+
+plotshape(sweepLowReclaim, title="Sell-side Sweep/Reclaim", style=shape.triangleup, location=location.belowbar, color=color.new(color.lime, 0), size=size.tiny, text="Sweep")
+plotshape(sweepHighReject, title="Buy-side Sweep/Reject", style=shape.triangledown, location=location.abovebar, color=color.new(color.red, 0), size=size.tiny, text="Sweep")
+
+// =============================================================================
+// Location logic
+// =============================================================================
+
+nearLongLocation = nearLevel(close, prevDayLow, levelProximity) or nearLevel(close, onLow, levelProximity) or nearLevel(close, eightLow, levelProximity) or nearLevel(close, or3High, levelProximity) or nearLevel(close, or15High, levelProximity) or nearLowerBand
+nearShortLocation = nearLevel(close, prevDayHigh, levelProximity) or nearLevel(close, onHigh, levelProximity) or nearLevel(close, eightHigh, levelProximity) or nearLevel(close, or3Low, levelProximity) or nearLevel(close, or15Low, levelProximity) or nearUpperBand
+
+// Opening range retest approximations.
+or15LongRetest = showOR15 and not na(or15High) and close > or15High and low <= or15High + levelProximity and low >= or15High - levelProximity
+or15ShortRetest = showOR15 and not na(or15Low) and close < or15Low and high >= or15Low - levelProximity and high <= or15Low + levelProximity
+
+or3LongRetest = showOR3 and not na(or3High) and close > or3High and low <= or3High + levelProximity and low >= or3High - levelProximity
+or3ShortRetest = showOR3 and not na(or3Low) and close < or3Low and high >= or3Low - levelProximity and high <= or3Low + levelProximity
+
+// =============================================================================
+// Confluence scoring
+// =============================================================================
+
+longScore = 0
+shortScore = 0
+
+// Location: 2 points
+longScore += nearLongLocation or or15LongRetest or or3LongRetest ? 2 : 0
+shortScore += nearShortLocation or or15ShortRetest or or3ShortRetest ? 2 : 0
+
+// Trend: 2 points
+longScore += trendBull ? 2 : 0
+shortScore += trendBear ? 2 : 0
+
+// Momentum: 2 points
+longScore += momentumBull ? 2 : 0
+shortScore += momentumBear ? 2 : 0
+
+// Structure: 2 points
+longScore += bosBull or sweepLowReclaim ? 2 : 0
+shortScore += bosBear or sweepHighReject ? 2 : 0
+
+// Risk context / room: simplified 2 points
+// Long gets room if not immediately near prior day high/ON high/upper band.
+longHasRoom = not nearLevel(close, prevDayHigh, levelProximity) and not nearLevel(close, onHigh, levelProximity) and not nearUpperBand
+shortHasRoom = not nearLevel(close, prevDayLow, levelProximity) and not nearLevel(close, onLow, levelProximity) and not nearLowerBand
+longScore += longHasRoom ? 2 : 0
+shortScore += shortHasRoom ? 2 : 0
+
+longWatch = longScore >= minScore and longScore > shortScore
+shortWatch = shortScore >= minScore and shortScore > longScore
+noTrade = longScore < minScore and shortScore < minScore
+
+// =============================================================================
+// Visual signals
+// =============================================================================
+
+plotshape(longWatch, title="Long Watch", style=shape.labelup, location=location.belowbar, color=color.new(color.lime, 0), textcolor=color.black, text="Long\nWatch")
+plotshape(shortWatch, title="Short Watch", style=shape.labeldown, location=location.abovebar, color=color.new(color.red, 0), textcolor=color.white, text="Short\nWatch")
+
+barcolor(longWatch ? color.new(color.lime, 65) : shortWatch ? color.new(color.red, 65) : na)
+
+// =============================================================================
+// Alerts
+// =============================================================================
+
+alertcondition(longWatch, title="Layer 8 Long Watch", message="Layer 8 NQ Confluence Engine: Long Watch signal. Check structure, stop, target, and prop-firm risk before manual entry.")
+alertcondition(shortWatch, title="Layer 8 Short Watch", message="Layer 8 NQ Confluence Engine: Short Watch signal. Check structure, stop, target, and prop-firm risk before manual entry.")
+alertcondition(or15LongRetest, title="15m OR Long Retest", message="15-minute opening range high retest detected. Confirm confluence before entry.")
+alertcondition(or15ShortRetest, title="15m OR Short Retest", message="15-minute opening range low retest detected. Confirm confluence before entry.")
+alertcondition(or3LongRetest, title="3m OR Long Retest", message="3-minute opening range high retest detected. Confirm confluence before entry.")
+alertcondition(or3ShortRetest, title="3m OR Short Retest", message="3-minute opening range low retest detected. Confirm confluence before entry.")
+alertcondition(sweepLowReclaim, title="Sell-side Sweep Reclaim", message="Sell-side liquidity sweep and reclaim detected.")
+alertcondition(sweepHighReject, title="Buy-side Sweep Reject", message="Buy-side liquidity sweep and rejection detected.")
+
+// =============================================================================
+// Dashboard
+// =============================================================================
+
+var table dash = table.new(position.top_right, 2, 8, border_width=1)
+
+if showDashboard and barstate.islast
+    table.cell(dash, 0, 0, "Layer 8 NQ Engine", text_color=color.white, bgcolor=color.new(color.black, 0))
+    table.cell(dash, 1, 0, "v0.1", text_color=color.white, bgcolor=color.new(color.black, 0))
+
+    table.cell(dash, 0, 1, "Long Score", text_color=color.white, bgcolor=color.new(color.black, 15))
+    table.cell(dash, 1, 1, str.tostring(longScore) + "/10", text_color=longScore >= minScore ? color.lime : color.white, bgcolor=color.new(color.black, 15))
+
+    table.cell(dash, 0, 2, "Short Score", text_color=color.white, bgcolor=color.new(color.black, 15))
+    table.cell(dash, 1, 2, str.tostring(shortScore) + "/10", text_color=shortScore >= minScore ? color.red : color.white, bgcolor=color.new(color.black, 15))
+
+    table.cell(dash, 0, 3, "Trend", text_color=color.white, bgcolor=color.new(color.black, 15))
+    table.cell(dash, 1, 3, trendBull ? "Bull" : trendBear ? "Bear" : "Neutral", text_color=trendBull ? color.lime : trendBear ? color.red : color.gray, bgcolor=color.new(color.black, 15))
+
+    table.cell(dash, 0, 4, "Momentum", text_color=color.white, bgcolor=color.new(color.black, 15))
+    table.cell(dash, 1, 4, momentumBull ? "Bull" : momentumBear ? "Bear" : "Neutral", text_color=momentumBull ? color.lime : momentumBear ? color.red : color.gray, bgcolor=color.new(color.black, 15))
+
+    table.cell(dash, 0, 5, "Location", text_color=color.white, bgcolor=color.new(color.black, 15))
+    table.cell(dash, 1, 5, nearLongLocation ? "Long" : nearShortLocation ? "Short" : "None", text_color=nearLongLocation ? color.lime : nearShortLocation ? color.red : color.gray, bgcolor=color.new(color.black, 15))
+
+    table.cell(dash, 0, 6, "Structure", text_color=color.white, bgcolor=color.new(color.black, 15))
+    table.cell(dash, 1, 6, bosBull or sweepLowReclaim ? "Bull" : bosBear or sweepHighReject ? "Bear" : "Neutral", text_color=bosBull or sweepLowReclaim ? color.lime : bosBear or sweepHighReject ? color.red : color.gray, bgcolor=color.new(color.black, 15))
+
+    table.cell(dash, 0, 7, "State", text_color=color.white, bgcolor=color.new(color.black, 15))
+    table.cell(dash, 1, 7, longWatch ? "LONG WATCH" : shortWatch ? "SHORT WATCH" : "WAIT", text_color=longWatch ? color.lime : shortWatch ? color.red : color.gray, bgcolor=color.new(color.black, 15))
