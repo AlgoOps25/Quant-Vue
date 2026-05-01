@@ -377,6 +377,57 @@ Key rule:
 
 > Qgrid is best used to add to a winner after the trade is already working.
 
+## 5A. Screenshot-confirmed Qgrid settings — Screenshot Set #4
+
+The following values were confirmed from the `NEW "Qgrid" TradingView Indicator Is HERE!` screenshot supplied by Michael.
+
+### Heiken Ashi 1
+
+| Setting | Confirmed value |
+|---|---|
+| HA1 Smooth Mode | Atrens |
+| HA1 Smooth Period | 33 |
+| Bull Color | Cyan/teal |
+| Bear Color | Blue |
+
+### Heiken Ashi 2
+
+| Setting | Confirmed value |
+|---|---|
+| HA2 Smooth Mode | Atrens |
+| HA2 Smooth Period | 5 |
+| Bull Color | Cyan/teal |
+| Bear Color | Blue |
+
+### Add Heiken Ashi 2
+
+| Setting | Confirmed value |
+|---|---|
+| Number of bars for the pullback | 3 |
+| Number of bars for the lift after the pullback | 1 |
+
+### DMA
+
+| Setting | Confirmed value |
+|---|---|
+| DMA Length | 19 |
+
+### Step Moving Average
+
+| Setting | Confirmed value |
+|---|---|
+| Sensitivity Factor | 2.9 |
+| Bull Color | Cyan/teal |
+| Bear Color | Blue |
+
+Interpretation:
+
+- HA1 period 33 is the slower trend/pullback context.
+- HA2 period 5 is the faster reaction layer.
+- Pullback 3 and lift 1 make Qgrid look for a short pullback followed by immediate continuation.
+- DMA 19 and Step MA sensitivity 2.9 are the current captured baseline.
+- Use Qgrid for add-to-winner and continuation confirmation, not for averaging down.
+
 Transcript-derived notes:
 
 - Qgrid uses dots/add signals around a step moving average.
