@@ -89,6 +89,89 @@ Transcript-derived notes:
 - Use session background to identify your active trading window.
 - Many users keep raw bull/bear signals off to reduce clutter.
 
+## 3A. Screenshot-confirmed Qpro settings — Screenshot Set #1
+
+The following values were confirmed from the first screenshots supplied by Michael.
+
+### Time settings
+
+| Setting | Confirmed value |
+|---|---|
+| Use Session? | ON |
+| Trading Session | 09:30–16:00 |
+| Timezone | America |
+
+### Qcloud settings
+
+| Setting | Confirmed value |
+|---|---|
+| Use Qcloud | ON |
+| Qcloud Source | close |
+| Qcloud Period 1 | 19 |
+| Qcloud Period 2 | 29 |
+| Qcloud Period 3 | 49 |
+| Qcloud Period 4 | 59 |
+| Qcloud Period 5 | 69 |
+| Qcloud Period 6 | 99 |
+| Show Qcloud Bull/Bear Signals | OFF |
+
+Interpretation:
+
+- Use Qcloud as the broad trend-state layer.
+- Keep bull/bear labels off to reduce noise.
+- Do not trade every Qcloud color change during chop.
+
+### Qbands settings
+
+| Setting | Confirmed value |
+|---|---|
+| Use Qbands | ON |
+| Qbands Source | Weighted |
+| Qbands Length | 40 |
+| Qbands Lookback Distance | 256 |
+| Qbands Band Deviation | 5 |
+| Qbands Trend Period | 10 |
+| Show Qbands Bull/Bear Signals | OFF |
+
+Interpretation:
+
+- These are more responsive than the broader transcript examples that referenced 77 length.
+- Treat these as the current captured setup, not a universal default.
+- Validate on NQ Renko before using real prop-firm size.
+
+### Qwave settings
+
+| Setting | Confirmed value |
+|---|---|
+| Use Qwave | ON |
+| Price To Use | Weighted |
+| APB Number Of Bars Back | 33 |
+| ATR Number Of Bars Back | 256 |
+| Qwave Band Deviation | 5.5 |
+| Show Qwave ADD Alerts? | OFF |
+
+Interpretation:
+
+- Qwave 33 / 256 / 5.5 is the main NQ Renko 4 band interaction setup from the tutorial.
+- Use upper/lower band interaction as location, then require Qline/Moneyball/SMC confirmation.
+
+### Qline settings
+
+| Setting | Confirmed value |
+|---|---|
+| Use Qline | ON |
+| Qline Source | close |
+| Qline Length | 6 |
+| Qline Multiplier | 0.1 |
+| Qline Change Calculation — no volume data | OFF |
+| Qline Reactivity | 0.4 |
+
+Interpretation:
+
+- Qline is being used as a responsive trigger/exit line.
+- Qline length 6 and reactivity 0.4 are faster than a slow trend filter.
+- Use Qline flip as confirmation after price reaches a level/band, not as a standalone trade.
+
 ### Qcloud
 
 Purpose: trend-state filter.
@@ -114,6 +197,7 @@ Transcript-derived NQ Renko 4 notes:
 - On Renko 4, the speaker sometimes reduces band length to about 65 or 60.
 - Trend period example: 15 for earlier flips.
 - Upper/lower Qbands are often turned off because Qwave has better band logic.
+- Screenshot Set #1 confirms a separate captured setup using Length 40, Lookback 256, Band Deviation 5, Trend Period 10.
 
 Practical use:
 
@@ -127,12 +211,13 @@ Purpose: dynamic bands, breakout/reversal context, and interaction levels.
 
 Transcript-derived NQ Renko 4 settings:
 
-| Setting | Starting value from transcript |
+| Setting | Starting value from transcript / screenshot |
 |---|---|
-| Lookback | 33 |
-| Method / weighting | Weighted |
-| Secondary value shown | 256 |
+| Lookback / APB Bars Back | 33 |
+| Method / Price To Use | Weighted |
+| ATR Bars Back / Secondary value | 256 |
 | Band deviation | 5.5 |
+| ADD Alerts | OFF in Screenshot Set #1 |
 
 Practical use:
 
@@ -145,12 +230,14 @@ Practical use:
 
 Purpose: fast scalping confirmation, exit guide, and optional bounce tool.
 
-Transcript-derived notes:
+Screenshot-confirmed settings:
 
-- Qline can be used as an exit signal: stay in until Qline flips.
-- Qline length can be lowered, for example to 5, for more sensitive exits.
-- Qline multiplier default referenced: 0.1.
-- Raising multiplier, for example toward 3, creates a different “Qline bounce” style.
+| Setting | Confirmed value |
+|---|---|
+| Source | close |
+| Length | 6 |
+| Multiplier | 0.1 |
+| Reactivity | 0.4 |
 
 Recommended use:
 
