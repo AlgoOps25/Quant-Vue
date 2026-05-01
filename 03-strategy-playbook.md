@@ -334,7 +334,87 @@ A valid short requires:
 - Trading the breakout directly into red/green opposing zones.
 - Using ES settings blindly on NQ without testing.
 
-## Strategy 7 — 8am Candle Retest
+## Strategy 7 — 15-Minute Opening Range Retest
+
+### Source screenshots
+
+Screenshot Set #8 was captured from `How To Use QuantVue & The 15-Minute Opening Range - Strategy #7`.
+
+Captured examples show:
+
+- Multi-chart NQ layout.
+- NQ 1-second / Renko execution view.
+- NQ 3-minute Renko execution view.
+- NQ 5-minute and 15-minute context views.
+- Yellow 15-minute opening range high/low levels drawn across the layout.
+- Purple higher-timeframe zones / fair value gap style areas.
+- Qcloud/Qpro trend context on Renko charts.
+- Moneyball momentum pane showing bearish momentum expansion.
+- Marked/circled areas showing rejection, retest, continuation, and target zones.
+
+### Best market condition
+
+- The first 15-minute opening range is clear.
+- Price breaks the 15-minute range and then retests one side.
+- Multiple charts agree: 15m context, 5m structure, and Renko execution all point the same way.
+- Moneyball confirms direction.
+- Qpro/Qcloud on execution chart supports the direction.
+- There is enough room to the next higher-timeframe level or FVG/zone.
+
+### Setup
+
+1. Mark the first 15-minute opening range high and low.
+2. Extend those levels across the active charts.
+3. Wait for price to break out of the range.
+4. Do not chase the first impulse if it is already extended.
+5. Wait for retest or rejection around the 15-minute OR level.
+6. Confirm direction on execution Renko chart with Qpro/Qcloud/Qline.
+7. Confirm momentum with Moneyball.
+8. Check the 5m/15m chart for opposing FVGs, order blocks, or major levels.
+9. Enter only when stop and target are obvious.
+
+### Long 15-minute OR setup
+
+A valid long requires:
+
+- Price breaks above the 15-minute OR high.
+- Retest holds the OR high as support.
+- Qpro/Qcloud turns or stays bullish on execution chart.
+- Moneyball supports upward momentum.
+- 5m/15m context does not show immediate major resistance directly overhead.
+- Target is next liquidity, prior high, Qwave/Qbands level, or higher-timeframe zone.
+
+### Short 15-minute OR setup
+
+A valid short requires:
+
+- Price breaks below the 15-minute OR low.
+- Retest rejects the OR low as resistance.
+- Qpro/Qcloud turns or stays bearish on execution chart.
+- Moneyball supports downward momentum.
+- 5m/15m context does not show immediate major support directly underneath.
+- Target is next liquidity, prior low, Qwave/Qbands level, or higher-timeframe zone.
+
+### Stop
+
+- Long: below the retest low or back inside the 15-minute range.
+- Short: above the retest high or back inside the 15-minute range.
+
+### Targets
+
+- Target 1: next intraday swing or 1R/2R depending on stop size.
+- Target 2: higher-timeframe zone, FVG edge, prior high/low, or opposing liquidity.
+- Runner: trail with Qline, Qcloud, or structure if trend day develops.
+
+### Avoid
+
+- Chasing the first candle after the range break.
+- Trading into a purple FVG/zone directly in front of price.
+- Taking the trade when Renko execution and 15m context disagree.
+- Taking the trade after Moneyball has already exhausted and reversed.
+- Entering when the stop must be too wide for prop-firm risk.
+
+## Strategy 8 — 8am Candle Retest
 
 ### Source screenshot
 
@@ -403,7 +483,7 @@ A valid short requires:
 - Entering directly under a large red resistance block.
 - Trading the 8am zone when the day is chopping and Qcloud is flipping repeatedly.
 
-## Strategy 8 — Zone Strategy
+## Strategy 9 — Zone Strategy
 
 ### Source screenshot
 
@@ -461,7 +541,7 @@ A valid short requires:
 - Taking a zone trade with no confirmation.
 - Taking a zone trade directly into the next opposing zone.
 
-## Strategy 9 — Candlestick Chart Strategy
+## Strategy 10 — Candlestick Chart Strategy
 
 Use when you cannot or do not want to trade Renko.
 
@@ -473,7 +553,7 @@ Use when you cannot or do not want to trade Renko.
 - Moneyball for momentum.
 - Use fewer signals and wider stops than Renko.
 
-## Strategy 10 — Broad Alert Workflow
+## Strategy 11 — Broad Alert Workflow
 
 Broad alerts should be treated as watchlist pings.
 
@@ -496,6 +576,6 @@ Broad alerts should be treated as watchlist pings.
 | Opening drive trend | Qcloud trend continuation, Qline exit |
 | Range/chop | Qwave/Qbands mean reversion only, or stand down |
 | Liquidity sweep reversal | SMC sweep reversal + Qline/Moneyball confirmation |
-| Clean breakout | Opening range breakout/retest |
+| Clean breakout | 3-minute OR breakout/retest or 15-minute OR retest |
 | Already in profit | Qgrid add-to-winner |
 | Unclear | No trade |
