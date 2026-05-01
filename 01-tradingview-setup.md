@@ -41,17 +41,100 @@ SMC display fix:
 - Drag Smart Money Concepts above candles.
 - This keeps momentum colors and trend visuals visible in front of candles.
 
-Suggested SMC settings from transcript:
+## 2A. Screenshot-confirmed SMC V2 settings — Screenshot Set #3
+
+The following values were confirmed from the SMC V2 screenshots supplied by Michael.
+
+### Structure display settings
+
+| Setting | Confirmed value |
+|---|---|
+| Labels | ON |
+| Label size | Tiny on one screen / Small on manual structure screen |
+| Lines style | Dotted for main structure screen |
+| Lines width | 1 for main dotted structure |
+
+### Manual structure settings
+
+| Setting | Confirmed value |
+|---|---|
+| Period | 20 |
+| Bullish | ON, Both |
+| Bearish | ON, Both |
+| Bullish color | Bright green |
+| Bearish color | Bright red |
+| Order Blocks | Seen OFF in manual structure panel, but chart examples show order-block zones visible from another setting/profile |
+| Manual labels | ON, Small |
+| Manual lines | Solid |
+| Manual line width | 2 |
+
+Interpretation:
+
+- Manual structure period 20 is the core SMC bias setting.
+- Use the solid manual structure levels as higher-confidence BOS/CHoCH context.
+- The chart examples show order-block zones being used as trade location, so keep order blocks available even if you toggle them off for a cleaner view.
+
+### Fair Value Gap settings
+
+| Setting | Confirmed value |
+|---|---|
+| FVG | OFF in the shown 5m SMC settings |
+| FVG value shown | 10 |
+
+Interpretation:
+
+- Keep FVGs off on the main 5m SMC bias chart unless needed.
+- Use a separate 15-minute FVG/context chart when you want fair-value-gap levels without cluttering the execution/bias chart.
+
+### Previous high/low settings
+
+Two states were captured:
+
+| Setting | Confirmed value |
+|---|---|
+| Daily | ON in final screenshot |
+| Weekly | ON in final screenshot |
+| Monthly | ON in final screenshot |
+| Yearly | ON in final screenshot |
+| High color | White in final screenshot |
+| Low color | Gray in final screenshot |
+| Line style | Dotted |
+
+Interpretation:
+
+- Use prior day/week/month/year levels as major liquidity and reaction zones.
+- White highs and gray lows keep the chart cleaner than bright red/green levels.
+
+### Market session settings
+
+| Setting | Confirmed value |
+|---|---|
+| Timezone | Etc/UTC |
+| Session labels | OFF in screenshots |
+| Borders | ON |
+| Transparency | 95 |
+| New York | 13:30–20:00 UTC, blue, checkbox OFF in captured panel |
+| London | 07:00–15:30 UTC, cyan, checkbox OFF in captured panel |
+| Tokyo | 00:00–06:00 UTC, magenta, checkbox OFF in captured panel |
+| Hong Kong | 13:30–20:00 UTC, olive/yellow, checkbox OFF in captured panel |
+
+Interpretation:
+
+- 13:30–20:00 UTC maps to the New York cash session window shown in the video context.
+- Borders ON with high transparency keeps sessions visible without overpowering price.
+- You can toggle the New York checkbox ON when you want the session box displayed, but the captured settings panel shows it OFF at the moment of screenshot.
+
+Suggested SMC settings from transcript and screenshots:
 
 | Component | Suggested starting point |
 |---|---|
-| EMA/cloud moving average length | 21 |
-| Manual structure period | 20 |
-| New York session | 09:30 to 16:00 or 16:05 |
-| Session box transparency | 99 |
-| Prior highs/lows colors | Highs white, lows gray |
+| EMA/cloud moving average length | 21 from transcript if using SMC cloud |
+| Manual structure period | 20 confirmed |
+| New York session | 13:30–20:00 UTC or 09:30–16:00 New York time |
+| Session transparency | 95 confirmed; 99 mentioned in transcript |
+| Prior highs/lows colors | Highs white, lows gray confirmed |
 | Fair Value Gaps | Prefer separate 15-minute chart |
-| FVG extension/count | 500 when using FVG-only chart |
+| FVG value shown | 10 confirmed in SMC panel; 500 extension discussed in transcript for FVG-only workflow |
 
 ### Chart B — Renko execution chart
 
