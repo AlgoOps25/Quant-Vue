@@ -1,11 +1,11 @@
 //@version=5
-indicator("Layer 8 NQ Confluence Engine v0.3", overlay=true, max_lines_count=500, max_labels_count=500)
+indicator("Layer 8 NQ Confluence Engine v0.4", overlay=true, max_lines_count=500, max_labels_count=500)
 
 // -----------------------------------------------------------------------------
-// Layer 8 NQ Confluence Engine v0.3
+// Layer 8 NQ Confluence Engine v0.4
 // Original TradingView indicator prototype.
 // This does not copy or reverse-engineer any proprietary QuantVue code.
-// Purpose: decision-support for manual NQ/MNQ trading.
+// Purpose: dashboard-first decision support for manual NQ/MNQ trading.
 // -----------------------------------------------------------------------------
 
 // =============================================================================
@@ -25,51 +25,46 @@ eightAmSession = input.session("0800-0801", "8am Capture Window", group=groupLev
 or3Session = input.session("0930-0933", "3-Minute OR Window", group=groupLevels)
 or15Session = input.session("0930-0945", "15-Minute OR Window", group=groupLevels)
 
-// Trend inputs
 groupTrend = "Trend"
 showTrendCloud = input.bool(true, "Show EMA Trend Cloud", group=groupTrend)
 fastEmaLen = input.int(21, "Fast EMA", minval=1, group=groupTrend)
 slowEmaLen = input.int(55, "Slow EMA", minval=1, group=groupTrend)
 trendNeutralPoints = input.float(0.0, "Neutral Buffer Points", minval=0.0, group=groupTrend)
 
-// Momentum inputs
 groupMomentum = "Momentum"
 rsiLen = input.int(14, "RSI Length", minval=1, group=groupMomentum)
 rsiBull = input.float(55.0, "RSI Bull Threshold", group=groupMomentum)
 rsiBear = input.float(45.0, "RSI Bear Threshold", group=groupMomentum)
 
-// ATR band inputs
 groupBands = "Volatility Bands"
 showAtrBands = input.bool(true, "Show ATR Bands", group=groupBands)
 atrLen = input.int(14, "ATR Length", minval=1, group=groupBands)
 atrMult = input.float(2.0, "ATR Multiplier", minval=0.1, step=0.1, group=groupBands)
 bandBasisLen = input.int(34, "Band Basis EMA", minval=1, group=groupBands)
 
-// Structure inputs
 groupStructure = "Structure"
 useBasicStructure = input.bool(true, "Use Basic Swing Structure", group=groupStructure)
 swingLen = input.int(8, "Swing Length", minval=1, group=groupStructure)
 showSweepMarkers = input.bool(false, "Show Sweep Markers", group=groupStructure)
 sweepCooldownBars = input.int(20, "Sweep Marker Cooldown Bars", minval=0, group=groupStructure)
 
-// Signal display inputs
-groupSignals = "Signal Display"
-showSignalLabels = input.bool(true, "Show Long/Short Watch Labels", group=groupSignals)
-labelMode = input.string("Transition Only", "Label Mode", options=["Transition Only", "Cooldown", "Every Bar"], group=groupSignals)
-signalCooldownBars = input.int(25, "Signal Cooldown Bars", minval=0, group=groupSignals)
-shadeSignalBars = input.bool(false, "Shade Signal Bars", group=groupSignals)
+groupDisplay = "Display"
+displayMode = input.string("Dashboard Only", "Display Mode", options=["Dashboard Only", "Minimal Markers", "Full Labels"], group=groupDisplay)
+showDashboard = input.bool(true, "Show Dashboard", group=groupDisplay)
+shadeSignalBars = input.bool(false, "Shade Signal Bars", group=groupDisplay)
 
-// Scoring inputs
-groupScore = "Confluence Score"
-minScore = input.int(8, "Minimum Alert Score", minval=1, maxval=10, group=groupScore)
-levelProximity = input.float(15.0, "Level Proximity Points", minval=0.25, step=0.25, group=groupScore)
-requireAlignedLocation = input.bool(true, "Require Location Aligned With Trend", group=groupScore)
-requireMomentumForSignal = input.bool(true, "Require Momentum For Watch Label", group=groupScore)
-requireStructureOrRetest = input.bool(true, "Require Structure/Sweep/OR Retest", group=groupScore)
-showDashboard = input.bool(true, "Show Dashboard", group=groupScore)
+groupSignals = "Signal Rules"
+labelMode = input.string("Transition Only", "Signal Mode", options=["Transition Only", "Cooldown", "Every Bar"], group=groupSignals)
+signalCooldownBars = input.int(35, "Signal Cooldown Bars", minval=0, group=groupSignals)
+minScore = input.int(8, "Minimum Alert Score", minval=1, maxval=10, group=groupSignals)
+levelProximity = input.float(15.0, "Level Proximity Points", minval=0.25, step=0.25, group=groupSignals)
+requireAlignedLocation = input.bool(true, "Require Location Aligned With Trend", group=groupSignals)
+requireMomentumForSignal = input.bool(true, "Require Momentum For Signal", group=groupSignals)
+requireStructureOrRetest = input.bool(true, "Require Structure/Sweep/OR Retest", group=groupSignals)
+requireTrendForSignal = input.bool(true, "Require Trend Alignment For Signal", group=groupSignals)
 
 // =============================================================================
-// Utility functions
+// Helpers
 // =============================================================================
 
 inSession(sess) =>
@@ -92,7 +87,7 @@ plot(showPrevDay ? prevDayHigh : na, "Prior Day High", color=color.new(color.whi
 plot(showPrevDay ? prevDayLow : na, "Prior Day Low", color=color.new(color.gray, 0), linewidth=1, style=plot.style_linebr)
 
 // =============================================================================
-// Overnight high/low
+// Overnight levels
 // =============================================================================
 
 isON = isIntraday and inSession(overnightSession)
@@ -112,7 +107,7 @@ plot(showOvernight and isIntraday ? onHigh : na, "Overnight High", color=color.n
 plot(showOvernight and isIntraday ? onLow : na, "Overnight Low", color=color.new(color.orange, 0), linewidth=1, style=plot.style_linebr)
 
 // =============================================================================
-// 8am candle zone
+// 8am zone
 // =============================================================================
 
 is8am = isIntraday and inSession(eightAmSession)
@@ -181,6 +176,7 @@ emaFast = ta.ema(close, fastEmaLen)
 emaSlow = ta.ema(close, slowEmaLen)
 trendBull = emaFast > emaSlow + trendNeutralPoints
 trendBear = emaFast < emaSlow - trendNeutralPoints
+trendText = trendBull ? "Bull" : trendBear ? "Bear" : "Neutral"
 
 pFast = plot(showTrendCloud ? emaFast : na, "Fast EMA", color=color.new(color.teal, 0), linewidth=1)
 pSlow = plot(showTrendCloud ? emaSlow : na, "Slow EMA", color=color.new(color.blue, 0), linewidth=1)
@@ -193,6 +189,7 @@ fill(pFast, pSlow, color=trendBull ? color.new(color.teal, 85) : trendBear ? col
 rsi = ta.rsi(close, rsiLen)
 momentumBull = rsi >= rsiBull
 momentumBear = rsi <= rsiBear
+momentumText = momentumBull ? "Bull" : momentumBear ? "Bear" : "Neutral"
 
 atr = ta.atr(atrLen)
 basis = ta.ema(close, bandBasisLen)
@@ -203,11 +200,11 @@ plot(showAtrBands ? basis : na, "ATR Band Basis", color=color.new(color.gray, 30
 plot(showAtrBands ? upperBand : na, "ATR Upper Band", color=color.new(color.gray, 60), linewidth=1)
 plot(showAtrBands ? lowerBand : na, "ATR Lower Band", color=color.new(color.gray, 60), linewidth=1)
 
-nearUpperBand = math.abs(close - upperBand) <= levelProximity
-nearLowerBand = math.abs(close - lowerBand) <= levelProximity
+nearUpperBand = nearLevel(close, upperBand, levelProximity)
+nearLowerBand = nearLevel(close, lowerBand, levelProximity)
 
 // =============================================================================
-// Basic structure and sweep detection
+// Structure and sweeps
 // =============================================================================
 
 swingHigh = ta.pivothigh(high, swingLen, swingLen)
@@ -224,7 +221,6 @@ if not na(swingLow)
 
 bosBull = useBasicStructure and not na(lastSwingHigh) and close > lastSwingHigh
 bosBear = useBasicStructure and not na(lastSwingLow) and close < lastSwingLow
-
 rawSweepLowReclaim = useBasicStructure and not na(lastSwingLow) and low < lastSwingLow and close > lastSwingLow
 rawSweepHighReject = useBasicStructure and not na(lastSwingHigh) and high > lastSwingHigh and close < lastSwingHigh
 
@@ -238,8 +234,8 @@ if bullSweepOk
 if bearSweepOk
     lastBearSweepBar := bar_index
 
-plotshape(showSweepMarkers and bullSweepOk, title="Sell-side Sweep/Reclaim", style=shape.triangleup, location=location.belowbar, color=color.new(color.lime, 0), size=size.tiny, text="Sweep")
-plotshape(showSweepMarkers and bearSweepOk, title="Buy-side Sweep/Reject", style=shape.triangledown, location=location.abovebar, color=color.new(color.red, 0), size=size.tiny, text="Sweep")
+plotshape(showSweepMarkers and bullSweepOk, title="Sell-side Sweep/Reclaim", style=shape.triangleup, location=location.belowbar, color=color.new(color.lime, 0), size=size.tiny, text="")
+plotshape(showSweepMarkers and bearSweepOk, title="Buy-side Sweep/Reject", style=shape.triangledown, location=location.abovebar, color=color.new(color.red, 0), size=size.tiny, text="")
 
 // =============================================================================
 // Location and retest logic
@@ -248,64 +244,54 @@ plotshape(showSweepMarkers and bearSweepOk, title="Buy-side Sweep/Reject", style
 supportLocation = nearLevel(close, prevDayLow, levelProximity) or nearLevel(close, onLow, levelProximity) or nearLevel(close, eightLow, levelProximity) or nearLevel(close, or3High, levelProximity) or nearLevel(close, or15High, levelProximity) or nearLowerBand
 resistanceLocation = nearLevel(close, prevDayHigh, levelProximity) or nearLevel(close, onHigh, levelProximity) or nearLevel(close, eightHigh, levelProximity) or nearLevel(close, or3Low, levelProximity) or nearLevel(close, or15Low, levelProximity) or nearUpperBand
 
-or15LongRetest = isIntraday and showOR15 and not na(or15High) and close > or15High and low <= or15High + levelProximity and low >= or15High - levelProximity
-or15ShortRetest = isIntraday and showOR15 and not na(or15Low) and close < or15Low and high >= or15Low - levelProximity and high <= or15Low + levelProximity
-or3LongRetest = isIntraday and showOR3 and not na(or3High) and close > or3High and low <= or3High + levelProximity and low >= or3High - levelProximity
-or3ShortRetest = isIntraday and showOR3 and not na(or3Low) and close < or3Low and high >= or3Low - levelProximity and high <= or3Low + levelProximity
+or15LongRetest = isIntraday and showOR15 and not na(or15High) and close > or15High and nearLevel(low, or15High, levelProximity)
+or15ShortRetest = isIntraday and showOR15 and not na(or15Low) and close < or15Low and nearLevel(high, or15Low, levelProximity)
+or3LongRetest = isIntraday and showOR3 and not na(or3High) and close > or3High and nearLevel(low, or3High, levelProximity)
+or3ShortRetest = isIntraday and showOR3 and not na(or3Low) and close < or3Low and nearLevel(high, or3Low, levelProximity)
 
 longLocation = supportLocation or or15LongRetest or or3LongRetest
 shortLocation = resistanceLocation or or15ShortRetest or or3ShortRetest
-
-alignedLongLocation = requireAlignedLocation ? longLocation : (longLocation or resistanceLocation)
+alignedLongLocation = requireAlignedLocation ? longLocation : (longLocation or shortLocation)
 alignedShortLocation = requireAlignedLocation ? shortLocation : (shortLocation or longLocation)
-
 locationText = longLocation and shortLocation ? "Mixed" : longLocation ? "Support/Long" : shortLocation ? "Resistance/Short" : "None"
 
 // =============================================================================
 // Confluence scoring
 // =============================================================================
 
-longScore = 0
-shortScore = 0
-
-longScore += alignedLongLocation ? 2 : 0
-shortScore += alignedShortLocation ? 2 : 0
-
-longScore += trendBull ? 2 : 0
-shortScore += trendBear ? 2 : 0
-
-longScore += momentumBull ? 2 : 0
-shortScore += momentumBear ? 2 : 0
-
 longStructure = bosBull or rawSweepLowReclaim or or15LongRetest or or3LongRetest
 shortStructure = bosBear or rawSweepHighReject or or15ShortRetest or or3ShortRetest
-longScore += longStructure ? 2 : 0
-shortScore += shortStructure ? 2 : 0
-
 longHasRoom = not nearLevel(close, prevDayHigh, levelProximity) and not nearLevel(close, onHigh, levelProximity) and not nearUpperBand
 shortHasRoom = not nearLevel(close, prevDayLow, levelProximity) and not nearLevel(close, onLow, levelProximity) and not nearLowerBand
+
+longScore = 0
+shortScore = 0
+longScore += alignedLongLocation ? 2 : 0
+shortScore += alignedShortLocation ? 2 : 0
+longScore += trendBull ? 2 : 0
+shortScore += trendBear ? 2 : 0
+longScore += momentumBull ? 2 : 0
+shortScore += momentumBear ? 2 : 0
+longScore += longStructure ? 2 : 0
+shortScore += shortStructure ? 2 : 0
 longScore += longHasRoom ? 2 : 0
 shortScore += shortHasRoom ? 2 : 0
 
-longGate = (not requireMomentumForSignal or momentumBull) and (not requireStructureOrRetest or longStructure)
-shortGate = (not requireMomentumForSignal or momentumBear) and (not requireStructureOrRetest or shortStructure)
-
+longGate = (not requireTrendForSignal or trendBull) and (not requireMomentumForSignal or momentumBull) and (not requireStructureOrRetest or longStructure)
+shortGate = (not requireTrendForSignal or trendBear) and (not requireMomentumForSignal or momentumBear) and (not requireStructureOrRetest or shortStructure)
 rawLongWatch = longGate and longScore >= minScore and longScore > shortScore
 rawShortWatch = shortGate and shortScore >= minScore and shortScore > longScore
 
 // =============================================================================
-// Label gating
+// Signal gating
 // =============================================================================
 
 var int lastLongSignalBar = na
 var int lastShortSignalBar = na
-
 longTransition = rawLongWatch and not rawLongWatch[1]
 shortTransition = rawShortWatch and not rawShortWatch[1]
-
 longCooldownOk = rawLongWatch and (na(lastLongSignalBar) or bar_index - lastLongSignalBar >= signalCooldownBars)
 shortCooldownOk = rawShortWatch and (na(lastShortSignalBar) or bar_index - lastShortSignalBar >= signalCooldownBars)
-
 longSignal = labelMode == "Every Bar" ? rawLongWatch : labelMode == "Cooldown" ? longCooldownOk : longTransition
 shortSignal = labelMode == "Every Bar" ? rawShortWatch : labelMode == "Cooldown" ? shortCooldownOk : shortTransition
 
@@ -315,20 +301,24 @@ if shortSignal
     lastShortSignalBar := bar_index
 
 // =============================================================================
-// Visual signals
+// Visual output
 // =============================================================================
 
-plotshape(showSignalLabels and longSignal, title="Long Watch", style=shape.labelup, location=location.belowbar, color=color.new(color.lime, 0), textcolor=color.black, text="Long\nWatch")
-plotshape(showSignalLabels and shortSignal, title="Short Watch", style=shape.labeldown, location=location.abovebar, color=color.new(color.red, 0), textcolor=color.white, text="Short\nWatch")
+showMinimalMarkers = displayMode == "Minimal Markers"
+showFullLabels = displayMode == "Full Labels"
 
+plotshape(showMinimalMarkers and longSignal, title="Long Watch Marker", style=shape.triangleup, location=location.belowbar, color=color.new(color.lime, 0), size=size.small, text="")
+plotshape(showMinimalMarkers and shortSignal, title="Short Watch Marker", style=shape.triangledown, location=location.abovebar, color=color.new(color.red, 0), size=size.small, text="")
+plotshape(showFullLabels and longSignal, title="Long Watch Label", style=shape.labelup, location=location.belowbar, color=color.new(color.lime, 0), textcolor=color.black, text="Long\nWatch")
+plotshape(showFullLabels and shortSignal, title="Short Watch Label", style=shape.labeldown, location=location.abovebar, color=color.new(color.red, 0), textcolor=color.white, text="Short\nWatch")
 barcolor(shadeSignalBars and rawLongWatch ? color.new(color.lime, 65) : shadeSignalBars and rawShortWatch ? color.new(color.red, 65) : na)
 
 // =============================================================================
 // Alerts
 // =============================================================================
 
-alertcondition(longSignal, title="Layer 8 Long Watch", message="Layer 8 NQ Confluence Engine: Long Watch signal. Check structure, stop, target, and prop-firm risk before manual entry.")
-alertcondition(shortSignal, title="Layer 8 Short Watch", message="Layer 8 NQ Confluence Engine: Short Watch signal. Check structure, stop, target, and prop-firm risk before manual entry.")
+alertcondition(longSignal, title="Layer 8 Long Watch", message="Layer 8 NQ Confluence Engine: Long Watch. Confirm stop, target, and prop-firm risk before manual entry.")
+alertcondition(shortSignal, title="Layer 8 Short Watch", message="Layer 8 NQ Confluence Engine: Short Watch. Confirm stop, target, and prop-firm risk before manual entry.")
 alertcondition(or15LongRetest, title="15m OR Long Retest", message="15-minute opening range high retest detected. Confirm confluence before entry.")
 alertcondition(or15ShortRetest, title="15m OR Short Retest", message="15-minute opening range low retest detected. Confirm confluence before entry.")
 alertcondition(or3LongRetest, title="3m OR Long Retest", message="3-minute opening range high retest detected. Confirm confluence before entry.")
@@ -344,25 +334,18 @@ var table dash = table.new(position.top_right, 2, 8, border_width=1)
 
 if showDashboard and barstate.islast
     table.cell(dash, 0, 0, "Layer 8 NQ Engine", text_color=color.white, bgcolor=color.new(color.black, 0))
-    table.cell(dash, 1, 0, "v0.3", text_color=color.white, bgcolor=color.new(color.black, 0))
-
+    table.cell(dash, 1, 0, "v0.4", text_color=color.white, bgcolor=color.new(color.black, 0))
     table.cell(dash, 0, 1, "Long Score", text_color=color.white, bgcolor=color.new(color.black, 15))
     table.cell(dash, 1, 1, str.tostring(longScore) + "/10", text_color=longScore >= minScore ? color.lime : color.white, bgcolor=color.new(color.black, 15))
-
     table.cell(dash, 0, 2, "Short Score", text_color=color.white, bgcolor=color.new(color.black, 15))
     table.cell(dash, 1, 2, str.tostring(shortScore) + "/10", text_color=shortScore >= minScore ? color.red : color.white, bgcolor=color.new(color.black, 15))
-
     table.cell(dash, 0, 3, "Trend", text_color=color.white, bgcolor=color.new(color.black, 15))
-    table.cell(dash, 1, 3, trendBull ? "Bull" : trendBear ? "Bear" : "Neutral", text_color=trendBull ? color.lime : trendBear ? color.red : color.gray, bgcolor=color.new(color.black, 15))
-
+    table.cell(dash, 1, 3, trendText, text_color=trendBull ? color.lime : trendBear ? color.red : color.gray, bgcolor=color.new(color.black, 15))
     table.cell(dash, 0, 4, "Momentum", text_color=color.white, bgcolor=color.new(color.black, 15))
-    table.cell(dash, 1, 4, momentumBull ? "Bull" : momentumBear ? "Bear" : "Neutral", text_color=momentumBull ? color.lime : momentumBear ? color.red : color.gray, bgcolor=color.new(color.black, 15))
-
+    table.cell(dash, 1, 4, momentumText, text_color=momentumBull ? color.lime : momentumBear ? color.red : color.gray, bgcolor=color.new(color.black, 15))
     table.cell(dash, 0, 5, "Location", text_color=color.white, bgcolor=color.new(color.black, 15))
     table.cell(dash, 1, 5, locationText, text_color=longLocation and not shortLocation ? color.lime : shortLocation and not longLocation ? color.red : longLocation and shortLocation ? color.yellow : color.gray, bgcolor=color.new(color.black, 15))
-
     table.cell(dash, 0, 6, "Structure", text_color=color.white, bgcolor=color.new(color.black, 15))
     table.cell(dash, 1, 6, longStructure ? "Bull" : shortStructure ? "Bear" : "Neutral", text_color=longStructure ? color.lime : shortStructure ? color.red : color.gray, bgcolor=color.new(color.black, 15))
-
     table.cell(dash, 0, 7, "State", text_color=color.white, bgcolor=color.new(color.black, 15))
     table.cell(dash, 1, 7, rawLongWatch ? "LONG WATCH" : rawShortWatch ? "SHORT WATCH" : "WAIT", text_color=rawLongWatch ? color.lime : rawShortWatch ? color.red : color.gray, bgcolor=color.new(color.black, 15))
