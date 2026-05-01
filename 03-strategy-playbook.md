@@ -217,32 +217,130 @@ For evaluations or funded accounts:
 
 ## Strategy 7 — 8am Candle Retest
 
+### Source screenshot
+
+Screenshot Set #6 includes an `8am Candle Retest - Strategy #9` example around **1:13**.
+
+The captured example shows:
+
+- A major bullish trend leg beginning near the 8am candle/zone area.
+- A yellow trendline following the impulse move.
+- Qcloud/Qpro support underneath price.
+- Green SMC/structure levels below price.
+- Red resistance/supply area above price.
+- A clean idea: mark the 8am zone, wait for reaction/retest, then trade continuation if structure confirms.
+
 ### Best market condition
 
-- Clear 8am candle range.
-- Price returns to 8am level later.
-- Liquidity and structure align.
+- Clear 8am candle range or zone.
+- Price leaves the 8am zone with strength.
+- Price later retests or respects that zone.
+- The retest aligns with Qpro/Qcloud, SMC structure, or a trendline.
+- There is open room to the next liquidity target.
 
 ### Setup
 
-1. Mark 8am candle high/low/body zone.
-2. Wait for retest.
-3. Use SMC and Qpro to confirm reaction.
-4. Trade away from the zone toward next liquidity/level.
+1. At 8am, mark the candle high, low, and body zone.
+2. Note whether price immediately expands away from that candle.
+3. Wait for price to return to the zone or to use that zone as support/resistance.
+4. Check SMC structure: BOS/CHoCH should support the direction.
+5. Check Qpro/Qcloud: trend-state should agree with the trade.
+6. Check Qline/Moneyball for trigger confirmation.
+7. Trade away from the 8am zone toward the next liquidity/level.
+
+### Long 8am retest
+
+A valid long requires:
+
+- Price leaves the 8am zone upward or reclaims it after a sweep.
+- Retest holds the zone as support.
+- Qcloud/Qline turns or remains bullish.
+- SMC supports bullish structure.
+- Target is not directly into a major red resistance zone.
+
+### Short 8am retest
+
+A valid short requires:
+
+- Price leaves the 8am zone downward or loses it after a sweep.
+- Retest rejects the zone as resistance.
+- Qcloud/Qline turns or remains bearish.
+- SMC supports bearish structure.
+- Target is not directly into a major green support zone.
+
+### Stop
+
+- Long: below the retest low or below the 8am zone.
+- Short: above the retest high or above the 8am zone.
+
+### Targets
+
+- First target: nearest structure level, Qwave/Qbands midline, or prior intraday swing.
+- Second target: prior day high/low, overnight high/low, or next SMC liquidity level.
+
+### Avoid
+
+- Chasing after price has already gone vertical.
+- Entering directly under a large red resistance block.
+- Trading the 8am zone when the day is chopping and Qcloud is flipping repeatedly.
 
 ## Strategy 8 — Zone Strategy
+
+### Source screenshot
+
+Screenshot Set #6 includes a `Simple "ZONE" Strategy - Strategy #10` example around **0:44**.
+
+The captured example shows a multi-chart layout with:
+
+- 5-minute NQ chart for larger structure.
+- Smaller execution views for trigger timing.
+- Yellow horizontal zone/level drawn across charts.
+- QuantVue Elite directional labels on lower panels.
+- The main idea: define the zone first, then wait for price reaction and confirmation.
 
 ### Best market condition
 
 - Clean 2m/5m structure.
 - Price repeatedly respects a supply/demand zone.
+- The zone aligns with prior high/low, SMC level, order block, FVG edge, or high-volume reaction area.
+- The level is visible across multiple timeframes.
 
 ### Setup
 
-1. Mark zone from SMC/order-block context.
-2. Wait for price to revisit.
-3. Use Qline/Moneyball/Qcloud to confirm direction.
-4. Enter only with clear stop beyond zone.
+1. Identify a high-probability zone before entry.
+2. Draw the zone as a horizontal area, not a single perfect line.
+3. Wait for price to revisit the zone.
+4. Confirm reaction: wick, rejection, reclaim, BOS/CHoCH, Qline flip, or Moneyball confirmation.
+5. Enter only after reaction, not while price is blindly falling/rising into the zone.
+6. Stop goes outside the zone.
+7. Target goes to the next opposing zone or liquidity pool.
+
+### Long zone trade
+
+A valid long requires:
+
+- Price enters demand/support zone.
+- Price rejects lower prices or reclaims the zone.
+- SMC or Qpro confirms bullish reaction.
+- Stop can be placed below the zone.
+- Target gives at least 2R or a clearly tested scalp expectancy.
+
+### Short zone trade
+
+A valid short requires:
+
+- Price enters supply/resistance zone.
+- Price rejects higher prices or loses the zone.
+- SMC or Qpro confirms bearish reaction.
+- Stop can be placed above the zone.
+- Target gives at least 2R or a clearly tested scalp expectancy.
+
+### Avoid
+
+- Drawing too many zones.
+- Trading the middle of a wide zone.
+- Taking a zone trade with no confirmation.
+- Taking a zone trade directly into the next opposing zone.
 
 ## Strategy 9 — Candlestick Chart Strategy
 
