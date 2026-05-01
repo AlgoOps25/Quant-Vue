@@ -96,22 +96,79 @@ Qline alone is not enough. Use it after location and structure are already known
 
 ## Strategy 4 — Qgrid Add-to-Winner
 
+### Source screenshots
+
+Screenshot Set #5 was captured from `Using "Qgrid" To Pass Prop Challenges! - Strategy Series #13`.
+
+Captured examples:
+
+- **2:37** — Initial long example on NQ 5-minute candlestick chart with green target and red stop drawn on chart.
+- **5:08** — Qgrid Bull / Qgrid Bear visual showing step moving average, pullbacks, and continuation dots.
+- **Later close-up** — Long continuation example showing target 25.00 points, stop 12.50 points, and risk/reward ratio 2.
+
 ### Best market condition
 
 - Existing trade is already profitable.
 - Trend remains intact.
 - Pullback is controlled.
+- Price is above the relevant step moving average for longs or below it for shorts.
+- Qgrid prints a dot/ADD signal in the direction of the existing profitable trade.
 
-### Entry/add rule
+### Initial-entry rule
+
+Qgrid can identify directional pullbacks, but for prop-firm use the safer model is:
+
+1. Take the initial position from a separate valid setup.
+2. Example initial setups can be SMC structure, Qcloud trend continuation, Qline flip from level, opening range retest, or Qwave/Qbands reaction.
+3. Use Qgrid as confirmation that the pullback is continuing in your favor.
+
+### Add-to-winner rule
 
 1. Enter initial position from another valid setup.
-2. Wait for trade to move in profit.
-3. Add only when Qgrid prints ADD/dot in trend direction.
-4. Do not add if adding increases total risk beyond plan.
+2. Wait for the trade to move into open profit.
+3. Wait for a controlled pullback.
+4. Confirm the pullback does **not** invalidate structure.
+5. Add only when Qgrid prints ADD/dot in the original trade direction.
+6. Added risk must still fit the prop-firm daily loss plan.
+7. If adding makes total risk unclear, do not add.
+
+### Long example logic
+
+A valid long add requires:
+
+- Existing long is green/open profit.
+- Price remains above or reclaims the Qgrid step moving average.
+- Pullback is shallow and controlled.
+- Qgrid Bull / cyan dot appears.
+- Stop can be placed below the pullback/structure.
+- Target still offers acceptable R, ideally around 2R or better.
+
+### Short example logic
+
+A valid short add requires:
+
+- Existing short is green/open profit.
+- Price remains below or rejects the Qgrid step moving average.
+- Pullback is shallow and controlled.
+- Qgrid Bear / blue dot appears.
+- Stop can be placed above the pullback/structure.
+- Target still offers acceptable R, ideally around 2R or better.
 
 ### Hard rule
 
 Never use Qgrid to average down a losing prop-firm trade.
+
+If the original trade is red, Qgrid is **not** permission to add. It is a warning to reassess risk.
+
+### Prop-firm simplification
+
+For evaluations or funded accounts:
+
+- Use Qgrid adds only after the first target or break-even move.
+- Use MNQ while learning the add-on logic.
+- Do not add during news candles.
+- Do not add into prior high/low, daily level, or major opposing order block.
+- Journal every Qgrid add separately.
 
 ## Strategy 5 — SMC Liquidity Sweep Reversal
 
