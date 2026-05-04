@@ -1,83 +1,84 @@
-# Quant-Vue NQ1! Prop-Firm Trading System
+# Quant-Vue NQ/MNQ Prop-Firm Trading System
 
-This repository documents a manual trading workflow for **NQ1! / MNQ / NQ futures** using:
+This repository is the operating manual for building and validating a **QuantVue Pro + TradingView Premium + Tradovate** workflow for NQ/MNQ futures.
 
-- **TradingView** for charting and alerts
-- **QuantVue Pro indicators** for confluence
-- **Tradovate** for manual execution
-- **Prop-firm risk rules** as the hard constraint
+> Educational trading documentation only. This is not financial advice. Every setup must be validated in replay and paper/sim mode before use in a live or prop-firm account.
 
-> Educational trading documentation only. This is not financial advice. Validate every rule in replay/paper mode before using it in a prop-firm account.
+## Current platform decision
 
-## Important privacy note
+The final decision is:
 
-GitHub currently reports this repo as **public**. Do not commit:
+```text
+TradingView Premium
++ CME Group real-time futures data
++ QuantVue Pro
++ Tradovate manual execution
+```
 
-- Tradovate credentials
-- Prop-firm account numbers
-- API keys
-- Screenshots showing balances, account IDs, or login details
-- Proprietary QuantVue source code
+Reason: TradingView Plus worked for basic NQ/MNQ charting and Renko box-size tests, but the actual QuantVue shared layouts required Premium-only features such as seconds-based charts and volume candles.
 
-Screenshots should only show chart layouts, indicator settings, and marked-up examples.
+## Current operating rule
 
-## Main idea
+```text
+Location → Level Test / Level Sweep → Structure → QuantVue Confirmation → Risk → Manual Entry
+```
 
-The QuantVue videos point to a **confluence system**, not a single alert-following system.
+Do not trade raw indicator flashes. QuantVue alerts are watch signals only.
 
-A valid trade should answer five questions:
-
-1. **Context:** Is NQ trending, ranging, reversing, or chopping?
-2. **Location:** Am I trading from a meaningful level instead of chasing?
-3. **Direction:** Do higher-timeframe structure and execution signals agree?
-4. **Trigger:** Did Qpro / Qcloud / Qline / Moneyball / Qgrid give a clear trigger?
-5. **Risk:** Does the trade fit the prop-firm daily loss, trailing drawdown, and minimum reward:risk rules?
-
-## Repo map
+## Lean repo map
 
 | File | Purpose |
 |---|---|
-| [`00-daily-runbook.md`](00-daily-runbook.md) | Morning checklist and daily workflow |
-| [`01-tradingview-setup.md`](01-tradingview-setup.md) | TradingView layout, indicators, and settings |
-| [`02-confluence-system.md`](02-confluence-system.md) | Scoring model for deciding whether a setup is worth trading |
-| [`03-strategy-playbook.md`](03-strategy-playbook.md) | Strategy families from the videos converted into executable rules |
-| [`04-alerts-and-tradovate-execution.md`](04-alerts-and-tradovate-execution.md) | Alerts, manual execution, brackets, and risk handling |
-| [`05-screenshots-needed.md`](05-screenshots-needed.md) | Screenshots still needed from the videos with timestamps |
-| [`06-video-index.md`](06-video-index.md) | Transcript-derived video index and what each video contributes |
-| [`templates/pre-market-checklist.md`](templates/pre-market-checklist.md) | Copy/paste morning checklist |
-| [`templates/trade-journal.csv`](templates/trade-journal.csv) | Journal template for tracking setup quality |
+| [`00-daily-runbook.md`](00-daily-runbook.md) | Daily prep and operating checklist |
+| [`01-tradingview-setup.md`](01-tradingview-setup.md) | QuantVue indicator settings captured from videos/screenshots |
+| [`02-confluence-system.md`](02-confluence-system.md) | Trade-quality scoring model |
+| [`03-strategy-playbook.md`](03-strategy-playbook.md) | Strategy families converted into rules |
+| [`04-alerts-and-tradovate-execution.md`](04-alerts-and-tradovate-execution.md) | Alerts, manual execution, and Tradovate handling |
+| [`06-video-index.md`](06-video-index.md) | Source index for the original QuantVue transcripts/videos |
+| [`08-one-page-trading-plan.md`](08-one-page-trading-plan.md) | One-page operating plan |
+| [`09-trade-no-trade-decision-tree.md`](09-trade-no-trade-decision-tree.md) | Entry filter and no-trade logic |
+| [`10-prop-firm-risk-template.md`](10-prop-firm-risk-template.md) | Prop-firm risk template |
+| [`11-replay-validation-plan.md`](11-replay-validation-plan.md) | Replay/paper validation process |
+| [`24-master-audit-and-chronological-plan.md`](24-master-audit-and-chronological-plan.md) | Final chronological plan and decision log |
+| [`30-premium-setup-and-layout-validation.md`](30-premium-setup-and-layout-validation.md) | Immediate post-upgrade setup checklist |
+| [`templates/pre-market-checklist.md`](templates/pre-market-checklist.md) | Copy/paste pre-market checklist |
+| [`templates/trade-journal.csv`](templates/trade-journal.csv) | Trade journal template |
 
-## Core layout
+## Files removed during cleanup
 
-Use two primary charts:
+The repo previously contained many step-by-step decision files created while comparing TradingView Plus, TradingView Premium, NinjaTrader, custom Pine development, and screenshot collection. Those interim files were consolidated into:
 
-1. **Bias Chart:** NQ1! 5-minute candlestick chart
-   - QuantVue SMC V2
-   - Liquidity grabs
-   - BOS / CHoCH
-   - Manual structure period 20
-   - Order blocks
-   - Prior day/week highs and lows
-   - Optional fair value gaps on a separate 15-minute chart
-
-2. **Execution Chart:** NQ1! Renko chart
-   - 1-second source chart
-   - Traditional Renko
-   - 4-box Renko for discretionary Qpro/Qwave/Qline trading
-   - 5-box Renko when using strategy/system examples that specifically require 5-box Renko
-   - Qpro V2, Qcloud, Qline, Qbands, Qwave, Moneyball, Qgrid as needed
+```text
+24-master-audit-and-chronological-plan.md
+30-premium-setup-and-layout-validation.md
+```
 
 ## Minimum live-trading gate
 
-Before using this with a live prop-firm account:
+Before using this workflow in a prop-firm account:
 
-- Replay test each setup family.
-- Log at least 20 examples of each setup.
-- Know the average stop size in points.
-- Know the dollar risk per NQ and MNQ contract.
-- Confirm Tradovate bracket behavior.
-- Define a daily shutdown rule.
+```text
+[ ] TradingView Premium active
+[ ] CME Group futures data active
+[ ] NQ1! / MNQ1! not delayed
+[ ] Banksy layout loads
+[ ] Alfredo Qpilot layout loads
+[ ] Replay workflow works
+[ ] First setup has 20 replay examples
+[ ] First setup has 20 paper/sim examples
+[ ] Rules followed at least 80% of the time
+[ ] Stop size fits MNQ/NQ risk plan
+[ ] Daily shutdown rule is written and followed
+```
 
-## Current status
+## Immediate next step
 
-This repository is the working reference system. The next improvement is to add screenshots from the exact video timestamps listed in `05-screenshots-needed.md`.
+After upgrading to TradingView Premium:
+
+```text
+1. Open 30-premium-setup-and-layout-validation.md
+2. Load Banksy Manual Setup
+3. Load Alfredo Qpilot Manual Layout
+4. Save clean copies of both layouts
+5. Begin replay validation with Level Test / Level Sweep setups
+```
