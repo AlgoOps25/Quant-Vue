@@ -1,0 +1,79 @@
+pro-chart-layouts channel.
+9:09 PM]TucciNomics 🌴 [QVUE], : My Personal NQ Setup (from 5m scalping video):
+https://www.tradingview.com/chart/t4p6lvP6/ 
+
+]TI Trading Wiz [QVUE], : tiTRADINGwiz NQ triple setup (Add Extra OB in pro-freebies)
+https://www.tradingview.com/chart/PxOLIxIf/
+
+TucciNomics 🌴 [QVUE], : The famous @Iceberg1906mj NQ Setup ($20K in payouts):
+https://www.tradingview.com/chart/JjrrChXk/
+
+TI Trading Wiz [QVUE], : q-grid renko - 1 minute ema vwap - 5m SMC - 15m Pivots and fair value gaps 
+https://www.tradingview.com/chart/BMOg7VKi/
+
+TucciNomics 🌴 [QVUE], : BROAD Alerts Setup from our guy @Iceberg1906mj :
+https://www.tradingview.com/chart/5cH27iNG/
+
+TIGHT BAND SETUP (more alerts):
+
+NQ/NAS - https://www.tradingview.com/chart/ayo7hEU5/
+ES/US500 - https://www.tradingview.com/chart/Z2LQ7cBx/
+YM/US30 - https://www.tradingview.com/chart/re5WPXhB/
+CL/USO - https://www.tradingview.com/chart/ltKVbesk/
+GC/XAU - https://www.tradingview.com/chart/4vO7rV95/
+EURUSD - https://www.tradingview.com/chart/gOOOAUAX/
+GBPJPY - https://www.tradingview.com/chart/cnfhR7Lk/
+BTCUSD - https://www.tradingview.com/chart/G8noGYZw/
+
+BROAD BAND SETUP (less alerts):
+
+NQ/NAS - https://www.tradingview.com/chart/ckaU8m5y/
+ES/US500 - https://www.tradingview.com/chart/peQUkKmW/
+YM/US30 - https://www.tradingview.com/chart/3uSj49bQ/
+CL/USO - https://www.tradingview.com/chart/O1WFgK7Q/
+GC/XAU - https://www.tradingview.com/chart/K4S34nDD/
+EURUSD - https://www.tradingview.com/chart/Q9jOKJTv/
+GBPJPY - https://www.tradingview.com/chart/M0RtG15L/
+BTCUSD - https://www.tradingview.com/chart/teFsOmjc/
+
+INDICATOR ONLY SETUP: 
+
+Qbands - https://www.tradingview.com/chart/0cj0nElp/
+Qline - https://www.tradingview.com/chart/KcNC1Hrr/ 
+Qwave - https://www.tradingview.com/chart/HiKYMGzt/ 
+Qcloud - https://www.tradingview.com/chart/01f4p1QZ/
+
+TucciNomics 🌴 [QVUE], : NINJATRADER WORKSPACES:
+https://drive.google.com/drive/folders/10cnsXXuXm5BNfGGelpyYGbubLMDu6Ie1?usp=sharing
+
+TI Trading Wiz [QVUE], : Renko Power NQ and ES https://www.tradingview.com/chart/vizDFZs3/
+Vide Going Over the chart https://www.youtube.com/watch?v=Dcl70-25dig 
+
+TI Trading Wiz [QVUE], : My Personal Chart layout for NQ or ES
+https://www.tradingview.com/chart/9SgPtbqD/ (MAKE SURE YOU ADD MY FREE INDICATORS 1st in the ⁠😁・member-freebies before clicking this chart)
+Made for a large portrait monitor - tv I use https://amzn.to/4gDLgB3 & stand https://amzn.to/4aQcrYe - you can also wall mount) - https://www.tradingview.com/chart/9SgPtbqD/ 
+
+TI Trading Wiz [QVUE], : Banksy Manual Setup
+https://www.tradingview.com/chart/dkdjQAG2/ (fixed)
+General Overview https://youtu.be/KUw-k4mwb4Q?si=LbKhAwm1TXa_uWf5
+A+ Setup Overview https://youtu.be/ETIrD4ZyfAI?si=7QIAe7KTgrBRmwoL
+
+TucciNomics 🌴 [QVUE], : Qbank_Pro Indicator Layout:
+https://www.tradingview.com/chart/27pAToo5/
+
+TucciNomics 🌴 [QVUE], : Banksy Manual Layout:
+https://www.tradingview.com/chart/1pa0fuKD/ 
+
+TucciNomics 🌴 [QVUE], : Alfredo's Qpilot Manual Layout:
+https://www.tradingview.com/chart/mRs5MUmS/
+
+User Guide here:
+https://docs.quantvue.io/our-tools/tradingview-indicators/q_pilot-indicator
+
+Daily thread here: 
+⁠Alf Qpilot MNQ
+
+YouTube Videos here:
+
+Guide - https://youtu.be/59qyGW_2oug
+Live Trading - https://youtu.be/5Gc3aiMGyiI

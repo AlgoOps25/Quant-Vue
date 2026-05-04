@@ -1,0 +1,36 @@
+TucciNomics 🌴 [QVUE], : QuantVue TradingView Chart/Candle Settings
+
+NQ/MNQ/NAS100:
+
+Renko Bricks (core setup) = Traditional, 2, 3 or 4 box size
+Normal Candles = yes, of all our tools work on normal candles
+Range Bars = yes, all of our tools work on range bars
+Heiken Ashi = yes, all of our work on heiken ashi
+
+ES/MES/US500:
+
+Renko Bricks (core setup) = Traditional, .5, 1, up to 2 box size
+Normal Candles = yes, of all our tools work on normal candles
+Range Bars = yes, all of our tools work on range bars
+Heiken Ashi = yes, all of our work on heiken ashi
+
+CL/USO:
+
+Renko Bricks (core setup) = Traditional, .075, .1, up to .25 box size
+Normal Candles = yes, of all our tools work on normal candles
+Range Bars = yes, all of our tools work on range bars
+Heiken Ashi = yes, all of our work on heiken ashi
+
+YM/US30:
+
+Renko Bricks (core setup) = Traditional, 1 box size
+Normal Candles = yes, of all our tools work on normal candles
+Range Bars = yes, all of our tools work on range bars
+Heiken Ashi = yes, all of our work on heiken ashi
+
+GC/XAU:
+
+Renko Bricks (core setup) = Traditional, .5, 1, up to 2 box size
+Normal Candles = yes, of all our tools work on normal candles
+Range Bars = yes, all of our tools work on range bars
+Heiken Ashi = yes, all of our work on heiken ashi
