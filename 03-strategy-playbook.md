@@ -1,8 +1,97 @@
 # 03 — Strategy Playbook
 
-This file converts the QuantVue video concepts into practical NQ1! setups.
+This file converts the QuantVue video concepts into practical NQ1!/MNQ1 setups.
+
+> **Current validation priority**: Strategy 0 — Level Test / Level Sweep ONLY until 20 replay + 20 sim examples are logged. Do not promote any other setup to live consideration until Strategy 0 passes the criteria in `11-replay-validation-plan.md`.
+
+---
+
+## Strategy 0 — Level Test / Level Sweep at 4H/15m Level *(First to Validate)*
+
+This is the foundational QuantVue setup. Everything else builds on it.
+
+### Core rule
+
+```text
+Location → Level Test / Level Sweep → Structure → QuantVue Confirmation → Risk → Manual Entry
+```
+
+Do NOT enter on an indicator flash. The level must be pre-marked and the reaction must occur at that level before any trigger is evaluated.
+
+### Pre-market prep
+
+1. On the 4H chart, mark the prior day high/low, overnight high/low, and any significant swing highs/lows.
+2. On the 15m chart, mark the opening range high/low (once it forms) and any clear reaction zones.
+3. Note whether those levels overlap with Qwave/Qbands edges, FVGs, or order blocks from `02-confluence-system.md`. Overlap = higher priority.
+4. Write the two or three most important levels for today's session BEFORE the market opens.
+
+### Instrument
+
+- MNQ while collecting the first 20 replay + 20 sim examples.
+- NQ only after MNQ execution is consistent and the setup scores A/A+ per `02-confluence-system.md`.
+
+### Session focus
+
+- Primary: 9:30–11:00 ET (NY open first 90 minutes).
+- Secondary: 14:00–15:15 ET (power hour).
+- Avoid: 12:00–13:30 ET (lunch chop) unless the setup is exceptionally clean (9–10 confluence score).
+
+### Long entry — Level Test / Sweep of support
+
+1. Price trades into or slightly below a pre-marked 4H or 15m **support** level.
+2. Reaction type:
+   - **Level Test**: wick into the level, immediate rejection back above.
+   - **Level Sweep**: spike below the level, then reclaim back above (stop-hunt behavior).
+3. On the 5m chart: SMC prints bullish CHoCH or BOS in the direction away from the level.
+4. On the 1-second Renko execution chart: Qline flips green AND Moneyball confirms upward momentum. Qpro/Qcloud must not be strongly bearish.
+5. R/R check: stop below the swept/tested level and confirming swing. Target must give at least 2R to the next logical objective.
+6. Score the setup using `02-confluence-system.md` before entry. Minimum 7/10 to consider. Prefer 9–10.
+
+### Short entry — Level Test / Sweep of resistance
+
+1. Price trades into or slightly above a pre-marked 4H or 15m **resistance** level.
+2. Reaction type:
+   - **Level Test**: wick into the level, immediate rejection back below.
+   - **Level Sweep**: spike above the level, then reclaim back below (stop-hunt behavior).
+3. On the 5m chart: SMC prints bearish CHoCH or BOS in the direction away from the level.
+4. On the 1-second Renko execution chart: Qline flips red AND Moneyball confirms downward momentum. Qpro/Qcloud must not be strongly bullish.
+5. R/R check: stop above the swept/tested level and confirming swing. Target must give at least 2R to the next logical objective.
+6. Score using `02-confluence-system.md`. Minimum 7/10 to consider. Prefer 9–10.
+
+### Stop placement
+
+- Long: below the sweep low or the confirming structure swing, plus a small buffer for noise.
+- Short: above the sweep high or the confirming structure swing, plus a small buffer for noise.
+- If the required stop is too wide for your current MNQ/NQ prop template → **skip the trade**. Do not force size. Revisit in `10-prop-firm-risk-template.md`.
+
+### Targets
+
+- Target 1: next intraday swing, opening range boundary, or midrange objective (~1–2R).
+- Target 2 / runner: next HTF level, prior day high/low, overnight high/low, Qwave/Qbands opposing edge, or major FVG edge.
+- Use Qline or Qcloud to trail a runner if a trend day develops.
+
+### No-trade conditions
+
+```text
+Conflicting direction between 15m and 5m structure.
+Qcloud/Qpro strongly trending against the intended direction.
+Required stop > max allowed in 10-prop-firm-risk-template.md.
+Price chopping around the level with repeated whipsaws — no clean test or sweep.
+Red-flag news is within the lockout window (see 10-prop-firm-risk-template.md).
+Setup score below 7/10.
+Two losses already hit for the day.
+```
+
+### Invalidation after entry
+
+- Price reclaims the swept level in the opposite direction with strong momentum and structure.
+- Stop is hit. Do not move the stop further away.
+
+---
 
 ## Strategy 1 — Qwave Band Reversal to Midline
+
+*(Validate after Strategy 0 has 40 logged examples)*
 
 ### Best market condition
 
@@ -37,6 +126,8 @@ This file converts the QuantVue video concepts into practical NQ1! setups.
 - Target 2: opposite band or next major level.
 
 ## Strategy 2 — Qcloud Trend Continuation
+
+*(Validate after Strategy 0 has 40 logged examples)*
 
 ### Best market condition
 
@@ -559,15 +650,15 @@ Broad alerts should be treated as watchlist pings.
 
 ### Use them to say:
 
-- “Look at the chart now.”
-- “A possible setup is forming.”
-- “Check whether confluence exists.”
+- "Look at the chart now."
+- "A possible setup is forming."
+- "Check whether confluence exists."
 
 ### Do not use them to say:
 
-- “Enter automatically.”
-- “Ignore SMC.”
-- “Ignore stop/target math.”
+- "Enter automatically."
+- "Ignore SMC."
+- "Ignore stop/target math."
 
 ## Strategy selection by day type
 
