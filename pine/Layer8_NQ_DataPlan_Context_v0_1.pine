@@ -1,0 +1,327 @@
+// This Pine Script® code is for educational/research use only.
+// It does not provide financial advice and does not guarantee profitability.
+//
+// Layer 8 NQ Data Plan Context v0.1
+// Purpose:
+//   Build a LIVE TradingView context dashboard for NQ/MNQ trading that combines:
+//   - VIX/Vanna proxy direction
+//   - Manual Gamma regime input
+//   - Prior day levels
+//   - Overnight levels
+//   - Opening range levels
+//   - Optional manually-entered option levels: HVL / Call Resistance / Put Support
+//   - A simple regime classification: RANGE / TREND / CAUTION
+//
+// Important limitation:
+//   Pine Script can read chart data and other TradingView symbols through request.security().
+//   It cannot pull arbitrary external GEX/DEX/HVL data from websites/APIs.
+//   For real options levels, enter them manually or use a data vendor that publishes them as TradingView symbols.
+
+//@version=5
+indicator("Layer 8 NQ Data Plan Context v0.1", overlay=true, max_lines_count=200, max_labels_count=200, max_boxes_count=50)
+
+//──────────────────────────────────────────────────────────────────────────────
+// 1) USER INPUTS
+//──────────────────────────────────────────────────────────────────────────────
+
+// Main data source for Vanna proxy. VIX falling is treated as a bullish NQ tailwind.
+vixSymbol = input.symbol("CBOE:VIX", "VIX / Volatility Symbol")
+vixTf     = input.timeframe("5", "VIX Trend Timeframe")
+vixFast   = input.int(8, "VIX Fast EMA", minval=1)
+vixSlow   = input.int(21, "VIX Slow EMA", minval=2)
+
+// Manual Gamma regime because TradingView does not natively provide GEX/DEX/HVL.
+gammaRegime = input.string("Unknown", "Gamma Regime", options=["Positive", "Negative", "Unknown"])
+
+// Trading sessions. Adjust if your futures data/session differs.
+rthSession      = input.session("0930-1600", "RTH Session")
+overnightSess   = input.session("1800-0929", "Overnight Session")
+openingRangeSes = input.session("0930-0945", "Opening Range Session")
+
+// Optional manually-entered options/dealer levels.
+// Leave a level at 0 to hide it.
+hvlLevel      = input.float(0.0, "Manual HVL / Key Gamma Level", step=0.25)
+callResLevel  = input.float(0.0, "Manual Call Resistance", step=0.25)
+putSupLevel   = input.float(0.0, "Manual Put Support", step=0.25)
+zeroGamma     = input.float(0.0, "Manual Zero Gamma Level", step=0.25)
+
+// Display controls.
+showDashboard  = input.bool(true, "Show Data Plan Dashboard")
+showBg         = input.bool(true, "Color Background by Regime")
+showPdLevels   = input.bool(true, "Show Prior Day High/Low")
+showOnLevels   = input.bool(true, "Show Overnight High/Low")
+showOrLevels   = input.bool(true, "Show Opening Range High/Low")
+showManualLvls = input.bool(true, "Show Manual Option Levels")
+showTradeTags  = input.bool(true, "Show Allowed Setup Tags")
+
+// Risk controls / scoring thresholds.
+// These are intentionally simple so we can tweak them later.
+longScoreThreshold  = input.int(3, "Long Bias Threshold", minval=1, maxval=5)
+shortScoreThreshold = input.int(3, "Short Bias Threshold", minval=1, maxval=5)
+
+//──────────────────────────────────────────────────────────────────────────────
+// 2) HELPER FUNCTIONS
+//──────────────────────────────────────────────────────────────────────────────
+
+// Returns true if current bar time is inside the supplied session.
+f_inSession(sess) =>
+    not na(time(timeframe.period, sess))
+
+// Draw or update a horizontal level line.
+f_updateLine(line existingLine, float price, color lineColor, string labelText, bool showLine) =>
+    line result = existingLine
+    if showLine and price > 0
+        if na(result)
+            result := line.new(bar_index, price, bar_index + 1, price, extend=extend.right, color=lineColor, width=2)
+        else
+            line.set_xy1(result, bar_index - 1, price)
+            line.set_xy2(result, bar_index, price)
+            line.set_extend(result, extend.right)
+            line.set_color(result, lineColor)
+    else
+        if not na(result)
+            line.delete(result)
+            result := na
+    result
+
+// Convert boolean direction into display text.
+f_dirText(bool rising, bool falling) =>
+    rising ? "Rising" : falling ? "Falling" : "Flat"
+
+//──────────────────────────────────────────────────────────────────────────────
+// 3) VIX / VANNA PROXY
+//──────────────────────────────────────────────────────────────────────────────
+
+// This is LIVE/stale depending on the symbol feed TradingView provides to your account.
+// On historical bars, it uses historical VIX values. On the live bar, it updates as VIX updates.
+vixClose = request.security(vixSymbol, vixTf, close, barmerge.gaps_off, barmerge.lookahead_off)
+vixEmaFast = ta.ema(vixClose, vixFast)
+vixEmaSlow = ta.ema(vixClose, vixSlow)
+
+vixRising  = vixEmaFast > vixEmaSlow
+vixFalling = vixEmaFast < vixEmaSlow
+vixFlat    = not vixRising and not vixFalling
+
+// Practical framework:
+// VIX falling -> Vanna tailwind for NQ longs.
+// VIX rising  -> Vanna headwind for NQ longs / favors shorts or caution.
+vannaBias = vixFalling ? "Bullish" : vixRising ? "Bearish" : "Neutral"
+
+//──────────────────────────────────────────────────────────────────────────────
+// 4) PRIOR DAY LEVELS
+//──────────────────────────────────────────────────────────────────────────────
+
+// These are pulled from the chart's current symbol, e.g., NQ1! or MNQ1!.
+priorHigh = request.security(syminfo.tickerid, "D", high[1], barmerge.gaps_off, barmerge.lookahead_off)
+priorLow  = request.security(syminfo.tickerid, "D", low[1],  barmerge.gaps_off, barmerge.lookahead_off)
+priorClose = request.security(syminfo.tickerid, "D", close[1], barmerge.gaps_off, barmerge.lookahead_off)
+
+//──────────────────────────────────────────────────────────────────────────────
+// 5) OVERNIGHT HIGH / LOW
+//──────────────────────────────────────────────────────────────────────────────
+
+inON = f_inSession(overnightSess)
+newON = inON and not inON[1]
+endON = not inON and inON[1]
+
+var float onHigh = na
+var float onLow  = na
+var float lastOnHigh = na
+var float lastOnLow  = na
+
+if newON
+    onHigh := high
+    onLow  := low
+else if inON
+    onHigh := math.max(nz(onHigh, high), high)
+    onLow  := math.min(nz(onLow, low), low)
+
+if endON
+    lastOnHigh := onHigh
+    lastOnLow  := onLow
+
+// During overnight, display developing ON levels. During RTH, display completed ON levels.
+onDisplayHigh = inON ? onHigh : lastOnHigh
+onDisplayLow  = inON ? onLow  : lastOnLow
+
+//──────────────────────────────────────────────────────────────────────────────
+// 6) OPENING RANGE HIGH / LOW
+//──────────────────────────────────────────────────────────────────────────────
+
+inOR = f_inSession(openingRangeSes)
+newOR = inOR and not inOR[1]
+endOR = not inOR and inOR[1]
+
+var float orHigh = na
+var float orLow  = na
+var float lastOrHigh = na
+var float lastOrLow  = na
+
+if newOR
+    orHigh := high
+    orLow  := low
+else if inOR
+    orHigh := math.max(nz(orHigh, high), high)
+    orLow  := math.min(nz(orLow, low), low)
+
+if endOR
+    lastOrHigh := orHigh
+    lastOrLow  := orLow
+
+orDisplayHigh = inOR ? orHigh : lastOrHigh
+orDisplayLow  = inOR ? orLow  : lastOrLow
+
+//──────────────────────────────────────────────────────────────────────────────
+// 7) REGIME CLASSIFICATION
+//──────────────────────────────────────────────────────────────────────────────
+
+// Gamma framework:
+// Positive gamma = pinned / mean reverting / range behavior.
+// Negative gamma = accelerated / continuation / trend behavior.
+// VIX direction modifies directional preference.
+
+isPositiveGamma = gammaRegime == "Positive"
+isNegativeGamma = gammaRegime == "Negative"
+isUnknownGamma  = gammaRegime == "Unknown"
+
+// Bias scoring is deliberately simple and tweakable.
+// Positive values favor longs; negative values favor shorts.
+int longScore = 0
+int shortScore = 0
+
+// Vanna component.
+longScore  += vixFalling ? 2 : 0
+shortScore += vixRising  ? 2 : 0
+
+// Gamma component.
+// Negative gamma supports continuation. Direction comes from price structure/trend below.
+// Positive gamma supports range/fade mode, so it does not strongly score direction by itself.
+longScore  += isNegativeGamma and close > priorClose ? 1 : 0
+shortScore += isNegativeGamma and close < priorClose ? 1 : 0
+
+// Simple structure component: current price vs prior close and opening range.
+longScore  += close > priorClose ? 1 : 0
+shortScore += close < priorClose ? 1 : 0
+longScore  += not na(orDisplayHigh) and close > orDisplayHigh ? 1 : 0
+shortScore += not na(orDisplayLow) and close < orDisplayLow ? 1 : 0
+
+// Final regime label.
+regime = isPositiveGamma ? "RANGE" : isNegativeGamma ? "TREND" : "CAUTION"
+
+// Directional plan.
+preferredDirection = longScore >= longScoreThreshold and longScore > shortScore ? "LONG" :
+     shortScore >= shortScoreThreshold and shortScore > longScore ? "SHORT" :
+     longScore == shortScore ? "BOTH / WAIT" : "WAIT"
+
+// Setup family selection.
+allowedSetup = isPositiveGamma ? "Fade extensions / Level Sweep / Level Test" :
+     isNegativeGamma ? "Breakout-Retest / Pullback Continuation" :
+     "A+ level reactions only"
+
+// Suggested QuantVue layout based on regime.
+qvLayout = isPositiveGamma ? "Banksy LevelTestSweep" :
+     isNegativeGamma ? "Qcloud-Qline / Banksy Continuation" :
+     "Banksy only / reduced size"
+
+riskMode = isUnknownGamma or (vixRising and preferredDirection == "LONG") or (vixFalling and preferredDirection == "SHORT") ? "REDUCED" : "NORMAL"
+
+//──────────────────────────────────────────────────────────────────────────────
+// 8) PLOT LEVELS
+//──────────────────────────────────────────────────────────────────────────────
+
+var line pdhLine = na
+var line pdlLine = na
+var line onhLine = na
+var line onlLine = na
+var line orhLine = na
+var line orlLine = na
+var line hvlLine = na
+var line crLine  = na
+var line psLine  = na
+var line zgLine  = na
+
+pdhLine := f_updateLine(pdhLine, priorHigh, color.new(color.gray, 0), "PDH", showPdLevels)
+pdlLine := f_updateLine(pdlLine, priorLow,  color.new(color.gray, 0), "PDL", showPdLevels)
+onhLine := f_updateLine(onhLine, onDisplayHigh, color.new(color.orange, 0), "ONH", showOnLevels and not na(onDisplayHigh))
+onlLine := f_updateLine(onlLine, onDisplayLow,  color.new(color.orange, 0), "ONL", showOnLevels and not na(onDisplayLow))
+orhLine := f_updateLine(orhLine, orDisplayHigh, color.new(color.blue, 0), "ORH", showOrLevels and not na(orDisplayHigh))
+orlLine := f_updateLine(orlLine, orDisplayLow,  color.new(color.blue, 0), "ORL", showOrLevels and not na(orDisplayLow))
+hvlLine := f_updateLine(hvlLine, hvlLevel,     color.new(color.white, 0), "HVL", showManualLvls)
+crLine  := f_updateLine(crLine,  callResLevel, color.new(color.red, 0), "Call Resistance", showManualLvls)
+psLine  := f_updateLine(psLine,  putSupLevel,  color.new(color.lime, 0), "Put Support", showManualLvls)
+zgLine  := f_updateLine(zgLine,  zeroGamma,    color.new(color.purple, 0), "Zero Gamma", showManualLvls)
+
+// Background regime color.
+bgColor = regime == "RANGE" ? color.new(color.blue, 90) : regime == "TREND" ? color.new(color.green, 90) : color.new(color.orange, 90)
+bgcolor(showBg ? bgColor : na)
+
+//──────────────────────────────────────────────────────────────────────────────
+// 9) TRADE PLAN TAGS
+//──────────────────────────────────────────────────────────────────────────────
+
+// These are not automatic buy/sell signals. They are context reminders.
+// Actual entry should still require your QuantVue confirmation and risk plan.
+longContext  = preferredDirection == "LONG" and barstate.isconfirmed
+shortContext = preferredDirection == "SHORT" and barstate.isconfirmed
+waitContext  = preferredDirection == "WAIT" or preferredDirection == "BOTH / WAIT"
+
+plotshape(showTradeTags and longContext, title="Context Long Allowed", style=shape.labelup, text="LONG\nPLAN", location=location.belowbar, size=size.tiny, color=color.new(color.lime, 0), textcolor=color.black)
+plotshape(showTradeTags and shortContext, title="Context Short Allowed", style=shape.labeldown, text="SHORT\nPLAN", location=location.abovebar, size=size.tiny, color=color.new(color.red, 0), textcolor=color.white)
+
+//──────────────────────────────────────────────────────────────────────────────
+// 10) DASHBOARD TABLE
+//──────────────────────────────────────────────────────────────────────────────
+
+var table dash = table.new(position.top_right, 2, 11, border_width=1)
+
+if showDashboard and barstate.islast
+    headerBg = color.new(color.black, 0)
+    rowBg    = color.new(color.black, 25)
+    regimeBg = regime == "RANGE" ? color.new(color.blue, 35) : regime == "TREND" ? color.new(color.green, 35) : color.new(color.orange, 35)
+    dirBg = preferredDirection == "LONG" ? color.new(color.lime, 35) : preferredDirection == "SHORT" ? color.new(color.red, 35) : color.new(color.gray, 35)
+
+    table.cell(dash, 0, 0, "Layer 8 Data Plan", text_color=color.white, bgcolor=headerBg)
+    table.cell(dash, 1, 0, "v0.1", text_color=color.white, bgcolor=headerBg)
+
+    table.cell(dash, 0, 1, "Regime", text_color=color.white, bgcolor=rowBg)
+    table.cell(dash, 1, 1, regime, text_color=color.white, bgcolor=regimeBg)
+
+    table.cell(dash, 0, 2, "Gamma", text_color=color.white, bgcolor=rowBg)
+    table.cell(dash, 1, 2, gammaRegime, text_color=color.white, bgcolor=rowBg)
+
+    table.cell(dash, 0, 3, "VIX", text_color=color.white, bgcolor=rowBg)
+    table.cell(dash, 1, 3, f_dirText(vixRising, vixFalling) + " / " + vannaBias, text_color=color.white, bgcolor=rowBg)
+
+    table.cell(dash, 0, 4, "Direction", text_color=color.white, bgcolor=rowBg)
+    table.cell(dash, 1, 4, preferredDirection, text_color=color.white, bgcolor=dirBg)
+
+    table.cell(dash, 0, 5, "Long Score", text_color=color.white, bgcolor=rowBg)
+    table.cell(dash, 1, 5, str.tostring(longScore) + "/5", text_color=color.white, bgcolor=rowBg)
+
+    table.cell(dash, 0, 6, "Short Score", text_color=color.white, bgcolor=rowBg)
+    table.cell(dash, 1, 6, str.tostring(shortScore) + "/5", text_color=color.white, bgcolor=rowBg)
+
+    table.cell(dash, 0, 7, "Allowed Setup", text_color=color.white, bgcolor=rowBg)
+    table.cell(dash, 1, 7, allowedSetup, text_color=color.white, bgcolor=rowBg)
+
+    table.cell(dash, 0, 8, "QV Layout", text_color=color.white, bgcolor=rowBg)
+    table.cell(dash, 1, 8, qvLayout, text_color=color.white, bgcolor=rowBg)
+
+    table.cell(dash, 0, 9, "Risk", text_color=color.white, bgcolor=rowBg)
+    table.cell(dash, 1, 9, riskMode, text_color=color.white, bgcolor=riskMode == "NORMAL" ? color.new(color.green, 45) : color.new(color.orange, 35))
+
+    table.cell(dash, 0, 10, "Rule", text_color=color.white, bgcolor=rowBg)
+    table.cell(dash, 1, 10, "Trade only if QuantVue agrees", text_color=color.white, bgcolor=rowBg)
+
+//──────────────────────────────────────────────────────────────────────────────
+// 11) ALERT CONDITIONS
+//──────────────────────────────────────────────────────────────────────────────
+
+// Alerts are context alerts only. They do not execute trades.
+alertcondition(longContext, title="Layer 8 Context LONG", message="Layer 8 Data Plan: LONG context active on {{ticker}} {{interval}}. Confirm with QuantVue before entry.")
+alertcondition(shortContext, title="Layer 8 Context SHORT", message="Layer 8 Data Plan: SHORT context active on {{ticker}} {{interval}}. Confirm with QuantVue before entry.")
+alertcondition(regime == "RANGE" and barstate.isconfirmed, title="Layer 8 RANGE Regime", message="Layer 8 Data Plan: RANGE regime on {{ticker}} {{interval}}. Prefer fades/level tests, avoid chasing breakouts.")
+alertcondition(regime == "TREND" and barstate.isconfirmed, title="Layer 8 TREND Regime", message="Layer 8 Data Plan: TREND regime on {{ticker}} {{interval}}. Prefer continuation/retests, avoid premature fades.")
+alertcondition(regime == "CAUTION" and barstate.isconfirmed, title="Layer 8 CAUTION Regime", message="Layer 8 Data Plan: CAUTION regime on {{ticker}} {{interval}}. Reduce size or wait for A+ setup.")
+
+// End of script.
