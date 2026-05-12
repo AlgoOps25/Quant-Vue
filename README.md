@@ -1,84 +1,130 @@
-# Quant-Vue NQ/MNQ Prop-Firm Trading System
+# Layer 8 Options Flow Trading System
 
-This repository is the operating manual for building and validating a **QuantVue Pro + TradingView Premium + Tradovate** workflow for NQ/MNQ futures.
+This repository is now the planning and build workspace for a **data-first options-flow trading system** using **Unusual Whales API Advanced + Python + dashboard/alerts**.
 
-> Educational trading documentation only. This is not financial advice. Every setup must be validated in replay and paper/sim mode before use in a live or prop-firm account.
+> Educational trading documentation only. This is not financial advice. No system guarantees profitable trades. Every model, alert, and setup must be validated through live observation, paper trading, and outcome tracking before risking real capital.
 
-## Current platform decision
+## Official roadmap
 
-The final decision is:
-
-```text
-TradingView Premium
-+ CME Group real-time futures data
-+ QuantVue Pro
-+ Tradovate manual execution
-```
-
-Reason: TradingView Plus worked for basic NQ/MNQ charting and Renko box-size tests, but the actual QuantVue shared layouts required Premium-only features such as seconds-based charts and volume candles.
-
-## Current operating rule
+The single source of truth is:
 
 ```text
-Location → Level Test / Level Sweep → Structure → QuantVue Confirmation → Risk → Manual Entry
+00-HOLY-GRAIL-UW-OPTIONS-SYSTEM.md
 ```
 
-Do not trade raw indicator flashes. QuantVue alerts are watch signals only.
+Start there for every question about the system.
 
-## Lean repo map
+## Current strategic direction
 
-| File | Purpose |
+The active direction is no longer QuantVue-first futures execution.
+
+The active direction is:
+
+```text
+Unusual Whales API Advanced
++ Python live data engine
++ SQLite/Postgres database
++ Streamlit/FastAPI dashboard
++ Discord/Telegram alerting
++ TradingView visualization only
++ manual broker execution first
+```
+
+Primary markets:
+
+```text
+SPX 0DTE
+SPY 0DTE
+QQQ 0DTE
+IWM 0DTE
+TSLA / NVDA / AAPL / AMD / META / MSFT / AMZN options
+```
+
+## Core decision framework
+
+Every alert must pass through this stack:
+
+```text
+Regime
+→ Flow
+→ Dealer/GEX context
+→ Contract quality
+→ Price confirmation
+→ Risk filter
+→ Alert
+→ Outcome tracking
+```
+
+No single data point creates a trade.
+
+## Active repo map
+
+| File / Folder | Purpose |
 |---|---|
-| [`00-daily-runbook.md`](00-daily-runbook.md) | Daily prep and operating checklist |
-| [`01-tradingview-setup.md`](01-tradingview-setup.md) | QuantVue indicator settings captured from videos/screenshots |
-| [`02-confluence-system.md`](02-confluence-system.md) | Trade-quality scoring model |
-| [`03-strategy-playbook.md`](03-strategy-playbook.md) | Strategy families converted into rules |
-| [`04-alerts-and-tradovate-execution.md`](04-alerts-and-tradovate-execution.md) | Alerts, manual execution, and Tradovate handling |
-| [`06-video-index.md`](06-video-index.md) | Source index for the original QuantVue transcripts/videos |
-| [`08-one-page-trading-plan.md`](08-one-page-trading-plan.md) | One-page operating plan |
-| [`09-trade-no-trade-decision-tree.md`](09-trade-no-trade-decision-tree.md) | Entry filter and no-trade logic |
-| [`10-prop-firm-risk-template.md`](10-prop-firm-risk-template.md) | Prop-firm risk template |
-| [`11-replay-validation-plan.md`](11-replay-validation-plan.md) | Replay/paper validation process |
-| [`24-master-audit-and-chronological-plan.md`](24-master-audit-and-chronological-plan.md) | Final chronological plan and decision log |
-| [`30-premium-setup-and-layout-validation.md`](30-premium-setup-and-layout-validation.md) | Immediate post-upgrade setup checklist |
-| [`templates/pre-market-checklist.md`](templates/pre-market-checklist.md) | Copy/paste pre-market checklist |
-| [`templates/trade-journal.csv`](templates/trade-journal.csv) | Trade journal template |
+| [`00-HOLY-GRAIL-UW-OPTIONS-SYSTEM.md`](00-HOLY-GRAIL-UW-OPTIONS-SYSTEM.md) | Official master roadmap and system reference |
+| [`archive/reference/README.md`](archive/reference/README.md) | Archive index for superseded decision documents |
+| [`archive/reference/uw-decision-archive.md`](archive/reference/uw-decision-archive.md) | Preserved summary of prior UW vendor/system decisions |
+| [`pine/Layer8_NQ_DataPlan_Context_v0_1.pine`](pine/Layer8_NQ_DataPlan_Context_v0_1.pine) | Earlier TradingView context indicator; retained as reference |
+| [`templates/`](templates/) | Templates retained for future journal/checklist reuse |
 
-## Files removed during cleanup
+## Archived / superseded direction
 
-The repo previously contained many step-by-step decision files created while comparing TradingView Plus, TradingView Premium, NinjaTrader, custom Pine development, and screenshot collection. Those interim files were consolidated into:
+Older QuantVue, Skylit, TradingView Premium, and futures-focused files remain historical reference unless the Holy Grail roadmap explicitly points to them.
+
+The following UW transition documents have been consolidated and archived:
 
 ```text
-24-master-audit-and-chronological-plan.md
-30-premium-setup-and-layout-validation.md
+47-options-data-vendor-decision.md
+48-unusual-whales-live-alert-system-blueprint.md
+49-options-data-stack-decision-uw-vs-alternatives.md
+50-unusual-whales-component-usage-map.md
 ```
 
-## Minimum live-trading gate
-
-Before using this workflow in a prop-firm account:
+Their active decisions now live in:
 
 ```text
-[ ] TradingView Premium active
-[ ] CME Group futures data active
-[ ] NQ1! / MNQ1! not delayed
-[ ] Banksy layout loads
-[ ] Alfredo Qpilot layout loads
-[ ] Replay workflow works
-[ ] First setup has 20 replay examples
-[ ] First setup has 20 paper/sim examples
-[ ] Rules followed at least 80% of the time
-[ ] Stop size fits MNQ/NQ risk plan
-[ ] Daily shutdown rule is written and followed
+00-HOLY-GRAIL-UW-OPTIONS-SYSTEM.md
+archive/reference/uw-decision-archive.md
 ```
 
-## Immediate next step
+## Pre-purchase gate
 
-After upgrading to TradingView Premium:
+Before buying Unusual Whales API Advanced:
 
 ```text
-1. Open 30-premium-setup-and-layout-validation.md
-2. Load Banksy Manual Setup
-3. Load Alfredo Qpilot Manual Layout
-4. Save clean copies of both layouts
-5. Begin replay validation with Level Test / Level Sweep setups
+[ ] Review 00-HOLY-GRAIL-UW-OPTIONS-SYSTEM.md
+[ ] Send UW support the pre-purchase endpoint/access question from Section 12
+[ ] Confirm API Advanced includes required WebSocket/REST access
+[ ] Confirm no $250 historical option-trades add-on is required for the MVP
+[ ] Confirm private personal-use alerting/local storage is allowed
+[ ] Confirm SPX/SPY/QQQ/IWM/TSLA/NVDA/AAPL/AMD/META/MSFT/AMZN endpoint coverage
+```
+
+## First implementation phase after purchase
+
+```text
+1. Authenticate with bearer token.
+2. Pull stock state for SPY/QQQ/NVDA.
+3. Pull option chains for SPY/QQQ/NVDA.
+4. Pull recent flows.
+5. Pull Market Tide / ETF Tide / Net Flow.
+6. Pull GEX / Greek exposure.
+7. Connect to live WebSocket streams.
+8. Write raw events to SQLite.
+9. Build SPX/SPY/QQQ 0DTE APEX alerts.
+10. Track every alert outcome before real-money execution.
+```
+
+## Final operating principle
+
+The system should never say:
+
+```text
+Buy now, guaranteed.
+```
+
+It should say:
+
+```text
+Live options data strongly favors this context. Trade only if execution, spread, risk, and price confirmation are acceptable.
 ```
